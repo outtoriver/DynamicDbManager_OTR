@@ -1,34 +1,174 @@
-/* DynamicDbManager unified Admin theme — Day/Night */
-.access-page{color:var(--app-text)}
-.access-page .panel,.access-page .stat,.access-page .workspace{background:var(--app-surface);border:1px solid var(--app-border);color:var(--app-text);box-shadow:var(--app-shadow),inset 0 1px 0 var(--app-highlight);backdrop-filter:blur(16px) saturate(125%);-webkit-backdrop-filter:blur(16px) saturate(125%)}
-.access-page h1,.access-page h2,.access-page h3,.access-page strong{color:var(--app-text)}
-.access-page p,.access-page .email,.access-page .account-meta>div>span,.access-page .caption,.access-page .rights-mini,.access-page .empty p,.access-page .picker-head small,.access-page .user-card-copy small{color:var(--app-muted)}
-.access-page .eyebrow,.access-page .caption{letter-spacing:.14em;font-size:10px;font-weight:800}
-.access-page input,.access-page select{color:var(--app-text);background:var(--app-input-bg);border:1px solid var(--app-border);border-radius:12px}
-.access-page input::placeholder{color:var(--app-muted)}
-.access-page input:focus,.access-page select:focus{outline:none;border-color:var(--app-primary-border);box-shadow:0 0 0 3px color-mix(in srgb,var(--app-primary) 12%,transparent)}
-.access-page .ui-btn,.access-page .segmented button,.access-page .tab,.access-page .link-btn,.access-page .more,.access-page .user-card,.access-page .preset-row button,.access-page .rights-row button{color:var(--app-text-soft);background:var(--app-control);border:1px solid var(--app-border)}
-.access-page .ui-btn:hover,.access-page .segmented button:hover,.access-page .tab:hover,.access-page .link-btn:hover,.access-page .more:hover,.access-page .user-card:hover,.access-page .preset-row button:hover,.access-page .rights-row button:hover{background:var(--app-control-hover);border-color:var(--app-border-strong);color:var(--app-text)}
-.access-page .ui-btn.primary,.access-page .tab.active,.access-page .user-card.active,.access-page .preset-row button.active,.access-page .rights-row button.enabled{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;border-color:var(--app-primary-border);box-shadow:0 8px 20px color-mix(in srgb,var(--app-primary) 18%,transparent)}
-.access-page .ui-btn.ghost{background:var(--app-control)}
-.access-page .toolbar,.access-page .workspace-head,.access-page .tabs,.access-page .segmented,.access-page .user-picker,.access-page .selected-user,.access-page .bulk,.access-page .panel-inset{border-color:var(--app-border)}
-.access-page .tabs,.access-page .segmented{background:var(--app-control-soft)}
-.access-page .picker-scroll{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--app-primary) 35%,transparent) transparent}
-.access-page .picker-scroll::-webkit-scrollbar,.access-page .users-grid::-webkit-scrollbar{height:7px;width:7px}
-.access-page .picker-scroll::-webkit-scrollbar-track,.access-page .users-grid::-webkit-scrollbar-track{background:transparent}
-.access-page .picker-scroll::-webkit-scrollbar-thumb,.access-page .users-grid::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--app-primary) 35%,transparent);border-radius:999px}
-.access-page .account-card,.access-page .perm-card{background:var(--app-control-soft);border-color:var(--app-border)}
-.access-page .account-card:hover,.access-page .perm-card:hover{background:var(--app-control-hover);border-color:var(--app-border-strong)}
-.access-page .account-card .badge.admin{background:color-mix(in srgb,var(--app-primary-2) 12%,transparent);color:var(--app-primary-text);border:1px solid var(--app-primary-border)}
-.access-page .account-card .badge.user{background:color-mix(in srgb,var(--app-cyan) 10%,transparent);color:var(--app-cyan);border:1px solid color-mix(in srgb,var(--app-cyan) 26%,transparent)}
-.access-page .account-card .chips b,.access-page .count-pill,.access-page .user-count{background:var(--app-control);border:1px solid var(--app-border);color:var(--app-text-soft)}
-.access-page .menu{background:var(--app-menu);border:1px solid var(--app-border-strong);box-shadow:var(--app-shadow-strong);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.access-page .menu button{color:var(--app-text-soft)}
-.access-page .menu button:hover{background:var(--app-control-hover);color:var(--app-text)}
-.access-page .modal-backdrop{background:color-mix(in srgb,var(--app-bg) 72%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.access-page .modal-card{background:var(--app-surface-strong);color:var(--app-text);border:1px solid var(--app-border-strong);box-shadow:var(--app-shadow-lg)}
-.access-page .modal-card h2,.access-page .modal-card label,.access-page .modal-card .role-options span{color:var(--app-text)}
-.access-page .modal-card small{color:var(--app-muted)}
-.access-page .role-options label{background:var(--app-control-soft);border:1px solid var(--app-border);color:var(--app-text)}
-.access-page .role-options label.selected{background:var(--app-active);border-color:var(--app-accent-border)}
-.access-page .toast{background:var(--app-menu);color:var(--app-text);border:1px solid var(--app-border-strong)}
+/* DynamicDbManager — unified Admin UI */
+.access-page { color: var(--app-text); }
+
+.access-page .panel,
+.access-page .stat,
+.access-page .workspace,
+.access-page .glass-panel {
+  color: var(--app-text);
+  background: var(--app-surface);
+  border-color: var(--app-border);
+  box-shadow: var(--app-shadow), inset 0 1px 0 var(--app-highlight);
+}
+
+.access-page h1,
+.access-page h2,
+.access-page h3,
+.access-page strong { color: var(--app-text); }
+
+.access-page p,
+.access-page .email,
+.access-page .caption,
+.access-page .rights-mini,
+.access-page .empty p,
+.access-page .picker-head small,
+.access-page .user-card-copy small,
+.access-page .account-meta > div > span { color: var(--app-muted); }
+
+.access-page input,
+.access-page select,
+.access-page textarea {
+  color: var(--app-text);
+  background: var(--app-input-bg);
+  border: 1px solid var(--app-border);
+}
+
+.access-page input::placeholder,
+.access-page textarea::placeholder { color: var(--app-muted); }
+
+.access-page input:focus,
+.access-page select:focus,
+.access-page textarea:focus {
+  outline: none;
+  border-color: var(--app-primary-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary) 12%, transparent);
+}
+
+.access-page .ui-btn,
+.access-page .segmented button,
+.access-page .tab,
+.access-page .link-btn,
+.access-page .more,
+.access-page .user-card,
+.access-page .preset-row button,
+.access-page .rights-row button {
+  color: var(--app-text-soft);
+  background: var(--app-control);
+  border: 1px solid var(--app-border);
+}
+
+.access-page .ui-btn:hover,
+.access-page .segmented button:hover,
+.access-page .tab:hover,
+.access-page .link-btn:hover,
+.access-page .more:hover,
+.access-page .user-card:hover,
+.access-page .preset-row button:hover,
+.access-page .rights-row button:hover {
+  color: var(--app-text);
+  background: var(--app-control-hover);
+  border-color: var(--app-border-strong);
+}
+
+.access-page .ui-btn.primary,
+.access-page .tab.active,
+.access-page .user-card.active,
+.access-page .preset-row button.active,
+.access-page .rights-row button.enabled {
+  color: #fff;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2));
+  border-color: var(--app-primary-border);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--app-primary) 18%, transparent);
+}
+
+.access-page .toolbar,
+.access-page .workspace-head,
+.access-page .tabs,
+.access-page .segmented,
+.access-page .user-picker,
+.access-page .selected-user,
+.access-page .bulk,
+.access-page .panel-inset {
+  border-color: var(--app-border);
+}
+
+.access-page .tabs,
+.access-page .segmented { background: var(--app-control-soft); }
+
+.access-page .picker-scroll,
+.access-page .users-grid {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+
+.access-page .picker-scroll::-webkit-scrollbar,
+.access-page .users-grid::-webkit-scrollbar { width: 7px; height: 7px; }
+.access-page .picker-scroll::-webkit-scrollbar-track,
+.access-page .users-grid::-webkit-scrollbar-track { background: transparent; }
+.access-page .picker-scroll::-webkit-scrollbar-thumb,
+.access-page .users-grid::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+}
+
+.access-page .account-card,
+.access-page .perm-card {
+  background: var(--app-control-soft);
+  border-color: var(--app-border);
+}
+.access-page .account-card:hover,
+.access-page .perm-card:hover {
+  background: var(--app-control-hover);
+  border-color: var(--app-border-strong);
+}
+
+.access-page .account-card .badge.admin {
+  background: color-mix(in srgb, var(--app-primary-2) 12%, transparent);
+  color: var(--app-primary-text);
+  border-color: var(--app-primary-border);
+}
+
+.access-page .account-card .badge.user {
+  background: color-mix(in srgb, var(--app-cyan) 10%, transparent);
+  color: var(--app-cyan);
+  border-color: color-mix(in srgb, var(--app-cyan) 26%, transparent);
+}
+
+.access-page .account-card .chips b,
+.access-page .count-pill,
+.access-page .user-count {
+  background: var(--app-control);
+  border-color: var(--app-border);
+  color: var(--app-text-soft);
+}
+
+.access-page .menu {
+  background: var(--app-menu);
+  border-color: var(--app-border-strong);
+  box-shadow: var(--app-shadow-strong);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+.access-page .menu button { color: var(--app-text-soft); }
+.access-page .menu button:hover { background: var(--app-control-hover); color: var(--app-text); }
+
+.access-page .modal-backdrop {
+  background: color-mix(in srgb, var(--app-bg) 72%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.access-page .modal-card {
+  background: var(--app-surface-strong);
+  color: var(--app-text);
+  border-color: var(--app-border-strong);
+  box-shadow: var(--app-shadow-lg);
+}
+
+.access-page .modal-card h2,
+.access-page .modal-card label,
+.access-page .modal-card .role-options span { color: var(--app-text); }
+.access-page .modal-card small { color: var(--app-muted); }
+.access-page .role-options label { background: var(--app-control-soft); border-color: var(--app-border); color: var(--app-text); }
+.access-page .role-options label.selected { background: var(--app-active); border-color: var(--app-accent-border); }
+.access-page .toast { background: var(--app-menu); color: var(--app-text); border-color: var(--app-border-strong); }
