@@ -56,3 +56,577 @@ html[data-theme="light"] body .table-page .modal-card input:focus,html[data-them
 html[data-theme="light"] body .table-page .attachment,html[data-theme="light"] body .table-page .file-btn{background:#f8fafc;color:#475569;border-color:#dbe3ee}
 html[data-theme="light"] body .table-page .modal-close{background:#f8fafc;color:#64748b;border-color:#dbe3ee}
 html[data-theme="light"] body .table-page .modal-close:hover{background:#eef2f7;color:#172033}
+
+/* ================================================================
+   FINAL TABLE ACTIONS + MODAL THEME OVERRIDES
+   Higher specificity intentionally wins over TableDataView scoped CSS.
+   ================================================================ */
+.table-page .data-table .actions-col {
+  width: 238px !important;
+  min-width: 238px !important;
+  max-width: 238px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  white-space: nowrap;
+}
+
+.table-page .row-actions {
+  width: 100%;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--table-actions-bg, var(--app-control)) !important;
+  border: 1px solid var(--app-border) !important;
+  box-shadow: inset 0 1px 0 var(--app-highlight);
+}
+
+.table-page .row-action {
+  flex: 1 1 0;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 32px;
+  padding: 0 10px !important;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.table-page .row-action svg { width: 15px; height: 15px; flex: 0 0 auto; }
+
+/* -------------------- Shared modal system -------------------- */
+html[data-theme="dark"] .table-page .modal-backdrop {
+  background: rgba(0,0,0,.72) !important;
+  backdrop-filter: blur(7px) saturate(120%);
+  -webkit-backdrop-filter: blur(7px) saturate(120%);
+}
+
+html[data-theme="light"] .table-page .modal-backdrop {
+  background: rgba(15,23,42,.20) !important;
+  backdrop-filter: blur(7px) saturate(120%);
+  -webkit-backdrop-filter: blur(7px) saturate(120%);
+}
+
+html[data-theme="dark"] .table-page .modal-card,
+html[data-theme="light"] .table-page .modal-card {
+  background: var(--app-surface-strong) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border-strong) !important;
+  box-shadow: var(--app-shadow-strong) !important;
+}
+
+.table-page .modal-header h2,
+.table-page .form-section h3,
+.table-page .attachments-title,
+.table-page .field label,
+.table-page .check-line,
+.table-page .modal-card label {
+  color: var(--app-text) !important;
+}
+
+.table-page .modal-header p,
+.table-page .field small,
+.table-page .empty-help {
+  color: var(--app-muted) !important;
+}
+
+.table-page .modal-close,
+.table-page .modal-btn,
+.table-page .icon-btn,
+.table-page .column-row input,
+.table-page .column-row select,
+.table-page .field input {
+  background: var(--app-control) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.table-page .modal-close:hover,
+.table-page .modal-btn:hover:not(:disabled),
+.table-page .icon-btn:hover:not(:disabled) {
+  background: var(--app-control-hover) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border-strong) !important;
+}
+
+.table-page .modal-btn.primary {
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2)) !important;
+  color: #fff !important;
+  border-color: var(--app-primary-border) !important;
+}
+
+.table-page .form-section {
+  background: var(--app-control-soft) !important;
+  border-color: var(--app-border) !important;
+}
+
+.table-page .column-row {
+  background: var(--app-control-soft) !important;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  padding: 7px;
+}
+
+.table-page .add-field,
+.table-page .file-btn {
+  background: var(--app-primary-soft) !important;
+  color: var(--app-primary-text) !important;
+  border-color: var(--app-primary-border) !important;
+  border-radius: 10px;
+}
+
+.table-page .add-field:hover,
+.table-page .file-btn:hover {
+  background: var(--app-primary-soft-strong) !important;
+}
+
+.table-page .attachment {
+  background: var(--app-control) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text-soft) !important;
+}
+
+.table-page .attachment-btn { color: var(--app-muted) !important; }
+.table-page .attachment-btn:hover { color: var(--app-text) !important; }
+.table-page .attachment-btn.danger:hover { color: var(--app-danger) !important; }
+
+.table-page .field input:focus,
+.table-page .column-row input:focus,
+.table-page .column-row select:focus {
+  border-color: var(--app-primary-border) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary) 12%, transparent) !important;
+}
+
+/* A slightly wider record editor for two-column forms. */
+.table-page .modal-card:not(.small) {
+  width: min(820px, calc(100vw - 32px)) !important;
+}
+
+@media (max-width: 900px) {
+  .table-page .data-table .actions-col {
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .table-page .data-table .actions-col {
+    width: 128px !important;
+    min-width: 128px !important;
+    max-width: 128px !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+
+  .table-page .row-actions { gap: 3px; padding: 3px; }
+  .table-page .row-action { height: 30px; padding: 0 5px !important; }
+  .table-page .row-action span { display: none; }
+
+  .table-page .modal-card,
+  .table-page .modal-card.small {
+    width: min(100%, calc(100vw - 20px)) !important;
+    max-height: calc(100vh - 20px);
+    padding: 14px;
+    border-radius: 16px;
+  }
+}
+
+/* ============================================================
+   Table UX refinement — actions + teleported modals
+   ============================================================ */
+
+/* Wider, clearer row actions */
+.table-page .data-table .actions-col {
+  width: 238px !important;
+  min-width: 238px !important;
+  max-width: 238px !important;
+}
+
+.table-page .data-table .row-actions {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 5px;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-control-soft);
+}
+
+.table-page .data-table .row-action {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 98px;
+  height: 34px;
+  padding: 0 13px;
+  gap: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--app-border);
+  background: var(--app-control);
+  color: var(--app-text-soft);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .01em;
+}
+
+.table-page .data-table .row-action svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.7;
+}
+
+.table-page .data-table .row-action.edit:hover {
+  background: color-mix(in srgb, var(--app-primary) 10%, var(--app-control));
+  color: var(--app-primary-text);
+  border-color: var(--app-primary-border);
+}
+
+.table-page .data-table .row-action.danger {
+  color: var(--app-danger);
+  background: color-mix(in srgb, var(--app-danger) 4%, var(--app-control));
+  border-color: var(--app-danger-border);
+}
+
+.table-page .data-table .row-action.danger:hover {
+  background: var(--app-danger-soft);
+  color: var(--app-danger);
+  border-color: var(--app-danger-border);
+}
+
+/* Teleported modal layer: .modal-card is a direct child of body,
+   so selectors must not depend on .table-page. */
+html[data-theme="dark"] body .modal-backdrop {
+  background: rgba(2, 6, 15, .72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+html[data-theme="light"] body .modal-backdrop {
+  background: rgba(15, 23, 42, .26);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-card,
+html[data-theme="light"] body .modal-backdrop .modal-card {
+  width: min(860px, calc(100vw - 32px));
+  max-height: min(88vh, 900px);
+  overflow: auto;
+  border-radius: 24px;
+  padding: 22px;
+  color: var(--app-text);
+  background: var(--app-surface-strong);
+  border: 1px solid var(--app-border-strong);
+  box-shadow: var(--app-shadow-strong);
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-card.small,
+html[data-theme="light"] body .modal-backdrop .modal-card.small {
+  width: min(720px, calc(100vw - 32px));
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-header,
+html[data-theme="light"] body .modal-backdrop .modal-header {
+  padding-bottom: 15px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-header h2,
+html[data-theme="light"] body .modal-backdrop .modal-header h2 {
+  margin: 0;
+  color: var(--app-text);
+  font-size: 19px;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-header p,
+html[data-theme="light"] body .modal-backdrop .modal-header p {
+  margin: 4px 0 0;
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-close,
+html[data-theme="light"] body .modal-backdrop .modal-close {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid var(--app-border);
+  background: var(--app-control);
+  color: var(--app-muted);
+  font-size: 23px;
+  line-height: 1;
+  transition: .18s ease;
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-close:hover,
+html[data-theme="light"] body .modal-backdrop .modal-close:hover {
+  background: var(--app-control-hover);
+  color: var(--app-text);
+  border-color: var(--app-border-strong);
+}
+
+html[data-theme="dark"] body .modal-backdrop .form-grid,
+html[data-theme="light"] body .modal-backdrop .form-grid {
+  gap: 18px;
+}
+
+html[data-theme="dark"] body .modal-backdrop .form-section,
+html[data-theme="light"] body .modal-backdrop .form-section {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--app-border);
+  background: var(--app-control-soft);
+}
+
+html[data-theme="dark"] body .modal-backdrop .form-section h3,
+html[data-theme="light"] body .modal-backdrop .form-section h3 {
+  color: var(--app-text-soft);
+  font-size: 11px;
+  letter-spacing: .10em;
+  margin-bottom: 14px;
+}
+
+html[data-theme="dark"] body .modal-backdrop .field,
+html[data-theme="light"] body .modal-backdrop .field {
+  margin-bottom: 12px;
+}
+
+html[data-theme="dark"] body .modal-backdrop .field label,
+html[data-theme="light"] body .modal-backdrop .field label {
+  color: var(--app-text-soft);
+  font-weight: 600;
+}
+
+html[data-theme="dark"] body .modal-backdrop .field input,
+html[data-theme="dark"] body .modal-backdrop .column-row input,
+html[data-theme="dark"] body .modal-backdrop .column-row select,
+html[data-theme="light"] body .modal-backdrop .field input,
+html[data-theme="light"] body .modal-backdrop .column-row input,
+html[data-theme="light"] body .modal-backdrop .column-row select {
+  height: 41px;
+  border-radius: 11px;
+  border: 1px solid var(--app-border);
+  background: var(--app-input-bg);
+  color: var(--app-text);
+  box-shadow: inset 0 1px 0 var(--app-highlight);
+}
+
+html[data-theme="dark"] body .modal-backdrop .field input:focus,
+html[data-theme="dark"] body .modal-backdrop .column-row input:focus,
+html[data-theme="dark"] body .modal-backdrop .column-row select:focus,
+html[data-theme="light"] body .modal-backdrop .field input:focus,
+html[data-theme="light"] body .modal-backdrop .column-row input:focus,
+html[data-theme="light"] body .modal-backdrop .column-row select:focus {
+  border-color: var(--app-primary-border);
+  box-shadow: 0 0 0 3px var(--app-active), inset 0 1px 0 var(--app-highlight);
+}
+
+html[data-theme="dark"] body .modal-backdrop .check-line,
+html[data-theme="light"] body .modal-backdrop .check-line {
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--app-text-soft);
+  transition: .18s ease;
+}
+
+html[data-theme="dark"] body .modal-backdrop .check-line:hover,
+html[data-theme="light"] body .modal-backdrop .check-line:hover {
+  background: var(--app-hover);
+  border-color: var(--app-border);
+}
+
+html[data-theme="dark"] body .modal-backdrop .attachments,
+html[data-theme="light"] body .modal-backdrop .attachments {
+  border-top-color: var(--app-border);
+}
+
+html[data-theme="dark"] body .modal-backdrop .attachments-title,
+html[data-theme="light"] body .modal-backdrop .attachments-title {
+  color: var(--app-text-soft);
+  font-weight: 700;
+}
+
+html[data-theme="dark"] body .modal-backdrop .attachment,
+html[data-theme="light"] body .modal-backdrop .attachment {
+  background: var(--app-control);
+  color: var(--app-text-soft);
+  border-color: var(--app-border);
+}
+
+html[data-theme="dark"] body .modal-backdrop .file-btn,
+html[data-theme="light"] body .modal-backdrop .file-btn {
+  background: var(--app-primary-soft);
+  color: var(--app-primary-text);
+  border-color: var(--app-primary-border);
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-actions,
+html[data-theme="light"] body .modal-backdrop .modal-actions {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--app-border);
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-btn,
+html[data-theme="light"] body .modal-backdrop .modal-btn {
+  min-width: 112px;
+  height: 42px;
+  padding: 0 17px;
+  border-radius: 11px;
+  border: 1px solid var(--app-border);
+  background: var(--app-control);
+  color: var(--app-text-soft);
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-btn:hover,
+html[data-theme="light"] body .modal-backdrop .modal-btn:hover {
+  background: var(--app-control-hover);
+  color: var(--app-text);
+}
+
+html[data-theme="dark"] body .modal-backdrop .modal-btn.primary,
+html[data-theme="light"] body .modal-backdrop .modal-btn.primary {
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2));
+  color: #fff;
+  border-color: var(--app-primary-border);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--app-primary) 20%, transparent);
+}
+
+html[data-theme="dark"] body .modal-backdrop .columns-list,
+html[data-theme="light"] body .modal-backdrop .columns-list {
+  max-height: 58vh;
+  padding-right: 3px;
+}
+
+html[data-theme="dark"] body .modal-backdrop .column-row,
+html[data-theme="light"] body .modal-backdrop .column-row {
+  grid-template-columns: minmax(0, 1fr) 150px 44px;
+  gap: 9px;
+  padding: 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 13px;
+  background: var(--app-control-soft);
+}
+
+html[data-theme="dark"] body .modal-backdrop .icon-btn.danger,
+html[data-theme="light"] body .modal-backdrop .icon-btn.danger {
+  width: 44px;
+  height: 41px;
+  border-radius: 10px;
+  background: var(--app-danger-soft);
+  color: var(--app-danger);
+  border: 1px solid var(--app-danger-border);
+}
+
+html[data-theme="dark"] body .modal-backdrop .add-field,
+html[data-theme="light"] body .modal-backdrop .add-field {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px dashed var(--app-primary-border);
+  border-radius: 10px;
+  background: var(--app-primary-soft);
+  color: var(--app-primary-text);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+html[data-theme="dark"] body .modal-backdrop .add-field:hover,
+html[data-theme="light"] body .modal-backdrop .add-field:hover {
+  background: var(--app-primary-soft-strong);
+  color: var(--app-text);
+}
+
+@media (max-width: 900px) {
+  .table-page .data-table .actions-col {
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+  }
+
+  .table-page .data-table .row-actions {
+    gap: 6px;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop .modal-card,
+  html[data-theme="light"] body .modal-backdrop .modal-card {
+    width: min(760px, calc(100vw - 24px));
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop .column-row,
+  html[data-theme="light"] body .modal-backdrop .column-row {
+    grid-template-columns: minmax(0, 1fr) 130px 44px;
+  }
+}
+
+@media (max-width: 640px) {
+  .table-page .data-table .actions-col {
+    width: 112px !important;
+    min-width: 112px !important;
+    max-width: 112px !important;
+  }
+
+  .table-page .data-table .row-actions {
+    min-height: auto;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 10px;
+  }
+
+  .table-page .data-table .row-action {
+    min-width: 0;
+    width: 100%;
+    height: 32px;
+    padding: 0 7px;
+  }
+
+  .table-page .data-table .row-action span {
+    display: none;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop,
+  html[data-theme="light"] body .modal-backdrop {
+    padding: 10px;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop .modal-card,
+  html[data-theme="light"] body .modal-backdrop .modal-card {
+    width: 100%;
+    max-height: 92vh;
+    padding: 15px;
+    border-radius: 18px;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop .column-row,
+  html[data-theme="light"] body .modal-backdrop .column-row {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop .icon-btn.danger,
+  html[data-theme="light"] body .modal-backdrop .icon-btn.danger {
+    width: 100%;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop .modal-actions,
+  html[data-theme="light"] body .modal-backdrop .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  html[data-theme="dark"] body .modal-backdrop .modal-btn,
+  html[data-theme="light"] body .modal-backdrop .modal-btn {
+    width: 100%;
+  }
+}
