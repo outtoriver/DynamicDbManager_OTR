@@ -1,5 +1,5 @@
-/* Unified Admin UI theme */
-html[data-theme="light"] body .access-page{color:var(--app-text)}
+/* Unified Access/Admin workspace theme */
+.access-page{color:var(--app-text)}
 .access-page .panel,.access-page .stat,.access-page .workspace,.access-page .panel-inset,.access-page .glass-panel{color:var(--app-text);background:var(--app-surface);border-color:var(--app-border);box-shadow:var(--app-shadow),inset 0 1px 0 var(--app-highlight)}
 .access-page h1,.access-page h2,.access-page h3,.access-page strong{color:var(--app-text)}
 .access-page p,.access-page .email,.access-page .caption,.access-page .rights-mini,.access-page .empty p,.access-page .user-card-copy small,.access-page .account-meta>div>span{color:var(--app-muted)}
@@ -8,17 +8,31 @@ html[data-theme="light"] body .access-page{color:var(--app-text)}
 .access-page input:focus,.access-page select:focus,.access-page textarea:focus{outline:none;border-color:var(--app-primary-border);box-shadow:0 0 0 3px color-mix(in srgb,var(--app-primary) 12%,transparent)}
 .access-page .ui-btn,.access-page .segmented button,.access-page .tab,.access-page .link-btn,.access-page .more,.access-page .user-card,.access-page .preset-row button,.access-page .rights-row button{color:var(--app-text-soft);background:var(--app-control);border-color:var(--app-border)}
 .access-page .ui-btn:hover,.access-page .segmented button:hover,.access-page .tab:hover,.access-page .link-btn:hover,.access-page .more:hover,.access-page .user-card:hover,.access-page .preset-row button:hover,.access-page .rights-row button:hover{color:var(--app-text);background:var(--app-control-hover);border-color:var(--app-border-strong)}
-.access-page .ui-btn.primary,.access-page .tab.active,.access-page .user-card.active,.access-page .preset-row button.active,.access-page .rights-row button.enabled{color:#fff;background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));border-color:var(--app-primary-border);box-shadow:0 8px 20px color-mix(in srgb,var(--app-primary) 18%,transparent)}
+.access-page .ui-btn.primary,.access-page .tab.active,.access-page .user-card.active,.access-page .preset-row button.active,.access-page .rights-row button.enabled{color:#fff;background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));border-color:var(--app-primary-border);box-shadow:0 8px 20px var(--app-primary-shadow)}
+.access-page .ui-btn.danger{background:var(--app-danger-soft);color:var(--app-danger);border-color:var(--app-danger-border)}
 .access-page .tabs,.access-page .segmented{background:var(--app-control-soft);border-color:var(--app-border)}
 .access-page .account-card,.access-page .perm-card{background:var(--app-control-soft);border-color:var(--app-border)}
 .access-page .account-card:hover,.access-page .perm-card:hover{background:var(--app-control-hover);border-color:var(--app-border-strong)}
 .access-page .badge.admin,.access-page .chips b.admin{background:color-mix(in srgb,var(--app-primary-2) 12%,transparent);color:var(--app-primary-text);border-color:var(--app-primary-border)}
 .access-page .badge.user{background:color-mix(in srgb,var(--app-cyan) 10%,transparent);color:var(--app-cyan);border-color:color-mix(in srgb,var(--app-cyan) 24%,transparent)}
 .access-page .menu{background:var(--app-menu);border-color:var(--app-border-strong);box-shadow:var(--app-shadow-strong);backdrop-filter:blur(18px) saturate(120%);-webkit-backdrop-filter:blur(18px) saturate(120%)}
-.access-page .menu button{color:var(--app-text-soft)}.access-page .menu button:hover{background:var(--app-control-hover);color:var(--app-text)}
+.access-page .menu button{color:var(--app-text-soft)}
+.access-page .menu button:hover{background:var(--app-control-hover);color:var(--app-text)}
 .access-page .modal-backdrop{background:color-mix(in srgb,var(--app-bg) 72%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .access-page .modal-card{background:var(--app-surface-strong);color:var(--app-text);border-color:var(--app-border-strong);box-shadow:var(--app-shadow-lg)}
-.access-page .modal-card h2,.access-page .modal-card label,.access-page .modal-card .role-options span{color:var(--app-text)}.access-page .modal-card small{color:var(--app-muted)}
-.access-page .role-options label{background:var(--app-control-soft);border-color:var(--app-border);color:var(--app-text)}.access-page .role-options label.selected{background:var(--app-active);border-color:var(--app-accent-border)}
-.access-page .picker-scroll{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) transparent}.access-page .picker-scroll::-webkit-scrollbar{width:7px;height:7px}.access-page .picker-scroll::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:999px}
-.access-page .toast{background:var(--app-menu);color:var(--app-text);border-color:var(--app-border-strong)}
+.access-page .modal-card h2,.access-page .modal-card label,.access-page .modal-card .role-options span{color:var(--app-text)}
+.access-page .modal-card small{color:var(--app-muted)}
+.access-page .role-options label{background:var(--app-control-soft);border-color:var(--app-border);color:var(--app-text)}
+.access-page .role-options label.selected{background:var(--app-active);border-color:var(--app-accent-border)}
+.access-page .picker-scroll{scrollbar-color:var(--scroll-thumb) transparent}
+.access-page .toast{background:var(--app-menu);color:var(--app-text);border-color:var(--app-border-strong);box-shadow:var(--app-shadow-lg)}
+
+html[data-theme="light"] body .access-page .panel,html[data-theme="light"] body .access-page .stat,html[data-theme="light"] body .access-page .workspace,html[data-theme="light"] body .access-page .panel-inset,html[data-theme="light"] body .access-page .glass-panel{background:#fff;border-color:#dbe3ee;box-shadow:0 16px 40px rgba(56,75,105,.07),inset 0 1px 0 #fff}
+html[data-theme="light"] body .access-page .account-card,html[data-theme="light"] body .access-page .perm-card,html[data-theme="light"] body .access-page .user-card{background:#fff;border-color:#dbe3ee}
+html[data-theme="light"] body .access-page .account-card:hover,html[data-theme="light"] body .access-page .perm-card:hover,html[data-theme="light"] body .access-page .user-card:hover{background:#f8fafc}
+html[data-theme="light"] body .access-page .user-card.active,html[data-theme="light"] body .access-page .tab.active{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}
+html[data-theme="light"] body .access-page .users-panel{background:#f8fafc}
+html[data-theme="light"] body .access-page .bulk{background:linear-gradient(135deg,#f4f6ff,#f8fbff);border-color:#d9e0ff}
+html[data-theme="light"] body .access-page .modal-backdrop{background:rgba(15,23,42,.20)}
+html[data-theme="light"] body .access-page .modal-card{background:#fff;color:#172033;border-color:#d7e0ea;box-shadow:0 30px 90px rgba(56,75,105,.18)}
+html[data-theme="light"] body .access-page .menu{background:#fff;border-color:#dbe3ee;box-shadow:0 18px 45px rgba(56,75,105,.16)}

@@ -1,0 +1,442 @@
+/* ============================================================
+   DynamicDbManager — Modal + Row Actions theme layer
+   Compatible with the current OTR/master theme variables.
+   No JS/API changes.
+   ============================================================ */
+
+/* -------------------- Table row actions -------------------- */
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--table-actions-bg, var(--app-control));
+  box-shadow: inset 0 1px 0 var(--app-highlight);
+}
+
+.row-action {
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--app-muted);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.row-action svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
+.row-action.edit:hover,
+.row-action.edit:focus-visible {
+  color: var(--app-primary-text);
+  background: var(--app-primary-soft);
+  border-color: var(--app-primary-border);
+}
+
+.row-action.danger:hover,
+.row-action.danger:focus-visible {
+  color: var(--app-danger);
+  background: var(--app-danger-soft);
+  border-color: var(--app-danger-border);
+}
+
+.row-action:active {
+  transform: scale(.97);
+}
+
+.actions-col {
+  background: var(--table-actions-bg, var(--table-bg)) !important;
+}
+
+.data-table th.actions-col,
+.data-table td.actions-col {
+  position: sticky;
+  right: 0;
+  z-index: 5;
+  box-shadow: -8px 0 16px -16px var(--app-text);
+}
+
+.data-table thead th.actions-col {
+  z-index: 8;
+}
+
+@media (max-width: 640px) {
+  .row-actions {
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .row-action {
+    width: 30px;
+    min-width: 30px;
+    padding: 0;
+  }
+
+  .row-action span {
+    display: none;
+  }
+}
+
+/* -------------------- Shared modal surface -------------------- */
+.modal-layer {
+  background: color-mix(in srgb, var(--app-bg) 58%, transparent) !important;
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+.modal-card {
+  background: var(--app-surface-strong) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+  box-shadow: var(--app-shadow-strong), inset 0 1px 0 var(--app-highlight) !important;
+}
+
+.modal-card h2,
+.modal-card h3,
+.modal-card strong,
+.modal-card label {
+  color: var(--app-text) !important;
+}
+
+.modal-card p,
+.modal-card small,
+.modal-card .muted,
+.modal-card .hint,
+.modal-card .form-hint {
+  color: var(--app-muted) !important;
+}
+
+.modal-header,
+.modal-footer,
+.modal-section,
+.form-section {
+  border-color: var(--app-border) !important;
+}
+
+.modal-close {
+  background: var(--app-control) !important;
+  color: var(--app-muted) !important;
+  border-color: var(--app-border) !important;
+}
+
+.modal-close:hover {
+  background: var(--app-control-hover) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border-strong) !important;
+}
+
+.modal-card input,
+.modal-card select,
+.modal-card textarea,
+.form-section input,
+.form-section select,
+.form-section textarea {
+  background: var(--app-input-bg) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.modal-card input::placeholder,
+.modal-card textarea::placeholder {
+  color: var(--app-muted) !important;
+}
+
+.modal-card input:focus,
+.modal-card select:focus,
+.modal-card textarea:focus,
+.form-section input:focus,
+.form-section select:focus,
+.form-section textarea:focus {
+  border-color: var(--app-primary-border) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary) 12%, transparent) !important;
+  outline: none;
+}
+
+.modal-btn,
+.secondary-btn,
+.file-btn,
+.add-field,
+.attachment-btn {
+  color: var(--app-text-soft) !important;
+  background: var(--app-control) !important;
+  border-color: var(--app-border) !important;
+}
+
+.modal-btn:hover,
+.secondary-btn:hover,
+.file-btn:hover,
+.add-field:hover,
+.attachment-btn:hover {
+  background: var(--app-control-hover) !important;
+  border-color: var(--app-border-strong) !important;
+  color: var(--app-text) !important;
+}
+
+.modal-btn.primary,
+.primary-btn {
+  color: #fff !important;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2)) !important;
+  border-color: var(--app-primary-border) !important;
+}
+
+.modal-btn.danger,
+.danger-btn {
+  color: var(--app-danger) !important;
+  background: var(--app-danger-soft) !important;
+  border-color: var(--app-danger-border) !important;
+}
+
+.attachments,
+.attachment,
+.password-user,
+.role-option,
+.check-line {
+  background: var(--app-control-soft) !important;
+  color: var(--app-text-soft) !important;
+  border-color: var(--app-border) !important;
+}
+
+/* -------------------- Excel modal -------------------- */
+.excel-backdrop {
+  background: color-mix(in srgb, var(--app-bg) 62%, transparent) !important;
+}
+
+.excel-modal {
+  background: var(--app-surface-strong) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+  box-shadow: var(--app-shadow-strong), inset 0 1px 0 var(--app-highlight) !important;
+}
+
+.excel-header {
+  border-bottom-color: var(--app-border) !important;
+}
+
+.excel-header h2,
+.excel-header h3,
+.excel-header strong,
+.excel-header label,
+.excel-modal h2,
+.excel-modal h3,
+.excel-modal strong {
+  color: var(--app-text) !important;
+}
+
+.excel-header p,
+.excel-modal p,
+.excel-eyebrow,
+.field-help,
+.file-copy span,
+.excel-footer-info {
+  color: var(--app-muted) !important;
+}
+
+.excel-close {
+  background: var(--app-control) !important;
+  color: var(--app-muted) !important;
+  border-color: var(--app-border) !important;
+}
+
+.excel-close:hover {
+  background: var(--app-control-hover) !important;
+  color: var(--app-text) !important;
+}
+
+.excel-tabs {
+  border-bottom-color: var(--app-border) !important;
+}
+
+.excel-tabs button {
+  color: var(--app-muted) !important;
+  background: transparent !important;
+}
+
+.excel-tabs button:hover {
+  background: var(--app-control-hover) !important;
+  color: var(--app-text) !important;
+}
+
+.excel-tabs button.active {
+  background: var(--app-active) !important;
+  color: var(--app-primary-text) !important;
+  border-color: var(--app-accent-border) !important;
+}
+
+.field-card,
+.mapping-card,
+.preview-card,
+.switch-row {
+  background: var(--app-control-soft) !important;
+  color: var(--app-text-soft) !important;
+  border-color: var(--app-border) !important;
+}
+
+.field-card > label,
+.switch-label strong,
+.preview-head strong,
+.mapping-head strong {
+  color: var(--app-text) !important;
+}
+
+.excel-input {
+  background: var(--app-input-bg) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.excel-input:focus {
+  border-color: var(--app-primary-border) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary) 12%, transparent) !important;
+}
+
+.file-drop {
+  background: var(--app-control) !important;
+  border-color: var(--app-border-strong) !important;
+}
+
+.file-drop.selected {
+  background: var(--app-active) !important;
+  border-color: var(--app-accent-border) !important;
+}
+
+.file-copy strong {
+  color: var(--app-text) !important;
+}
+
+.file-icon {
+  background: var(--app-primary-soft) !important;
+  color: var(--app-primary-text) !important;
+}
+
+.mini-btn,
+.excel-modal .primary-btn {
+  color: var(--app-text-soft) !important;
+  background: var(--app-control) !important;
+  border-color: var(--app-border) !important;
+}
+
+.mini-btn:hover {
+  background: var(--app-control-hover) !important;
+  color: var(--app-text) !important;
+}
+
+.excel-modal .primary-btn {
+  color: #fff !important;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2)) !important;
+  border-color: var(--app-primary-border) !important;
+}
+
+.preview-head,
+.mapping-head,
+.excel-footer {
+  border-color: var(--app-border) !important;
+}
+
+.preview-table {
+  color: var(--app-text-soft) !important;
+  border-color: var(--app-border) !important;
+}
+
+.preview-table th {
+  background: var(--app-hover) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.preview-table td {
+  background: transparent !important;
+  color: var(--app-text-soft) !important;
+  border-color: var(--app-border) !important;
+}
+
+.preview-table tr:hover td {
+  background: var(--app-control-hover) !important;
+}
+
+.mapping-pill {
+  background: var(--app-control) !important;
+  color: var(--app-text-soft) !important;
+  border-color: var(--app-border) !important;
+}
+
+.excel-error {
+  background: var(--app-danger-soft) !important;
+  color: var(--app-danger) !important;
+  border-color: var(--app-danger-border) !important;
+}
+
+/* -------------------- Explicit light/dark hardening -------------------- */
+html[data-theme="light"] .modal-card,
+html[data-theme="light"] .excel-modal {
+  background: #ffffff !important;
+  color: #172033 !important;
+  border-color: #dbe3ee !important;
+}
+
+html[data-theme="light"] .modal-card input,
+html[data-theme="light"] .modal-card select,
+html[data-theme="light"] .modal-card textarea,
+html[data-theme="light"] .excel-input {
+  background: #ffffff !important;
+  color: #172033 !important;
+}
+
+html[data-theme="light"] .field-card,
+html[data-theme="light"] .mapping-card,
+html[data-theme="light"] .preview-card,
+html[data-theme="light"] .switch-row,
+html[data-theme="light"] .attachments,
+html[data-theme="light"] .attachment {
+  background: #f8fafc !important;
+  color: #334155 !important;
+  border-color: #dbe3ee !important;
+}
+
+html[data-theme="light"] .file-drop,
+html[data-theme="light"] .mini-btn,
+html[data-theme="light"] .modal-btn,
+html[data-theme="light"] .secondary-btn {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+html[data-theme="light"] .row-actions {
+  background: #ffffff !important;
+  border-color: #dbe3ee !important;
+}
+
+html[data-theme="light"] .row-action.edit:hover,
+html[data-theme="light"] .row-action.edit:focus-visible {
+  background: #eef2ff;
+  color: #3730a3;
+  border-color: #c7d2fe;
+}
+
+html[data-theme="light"] .row-action.danger:hover,
+html[data-theme="light"] .row-action.danger:focus-visible {
+  background: #fff1f4;
+  color: #c83e5e;
+  border-color: #f4bac7;
+}
+
+html[data-theme="dark"] .modal-card,
+html[data-theme="dark"] .excel-modal {
+  background: var(--app-surface-strong) !important;
+  color: var(--app-text) !important;
+}

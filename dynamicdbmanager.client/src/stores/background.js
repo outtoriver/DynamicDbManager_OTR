@@ -10,11 +10,11 @@ export const BACKGROUND_TYPES = [
   'black'
 ]
 
-export const DEFAULT_BACKGROUND = 'particles'
+const STORAGE_KEY = 'backgroundType'
+const DEFAULT_BACKGROUND = 'particles'
 
 export const useBackgroundStore = defineStore('background', {
   state: () => ({
-    // Частицы — безопасный и нейтральный фон по умолчанию.
     type: DEFAULT_BACKGROUND
   }),
 
@@ -25,12 +25,19 @@ export const useBackgroundStore = defineStore('background', {
         : DEFAULT_BACKGROUND
 
       this.type = normalized
-      localStorage.setItem('backgroundType', normalized)
+
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, normalized)
+      }
     },
 
     loadFromStorage() {
-      const saved = localStorage.getItem('backgroundType')
+      if (typeof localStorage === 'undefined') {
+        this.type = DEFAULT_BACKGROUND
+        return
+      }
 
+      const saved = localStorage.getItem(STORAGE_KEY)
       this.type = BACKGROUND_TYPES.includes(saved)
         ? saved
         : DEFAULT_BACKGROUND

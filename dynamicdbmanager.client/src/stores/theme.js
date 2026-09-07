@@ -18,6 +18,10 @@ function applyTheme(mode) {
   root.dataset.themeMode = mode
   root.classList.toggle('dark', effective === 'dark')
   root.style.colorScheme = effective
+
+  window.dispatchEvent(new CustomEvent('themechange', {
+    detail: { mode, effective }
+  }))
 }
 
 export const useThemeStore = defineStore('theme', {
@@ -43,18 +47,18 @@ export const useThemeStore = defineStore('theme', {
 
   actions: {
     init() {
-      this.mode = MODES.includes(localStorage.getItem(STORAGE_KEY))
+      const saved = typeof localStorage !== 'undefined'
         ? localStorage.getItem(STORAGE_KEY)
-        : 'system'
+        : null
 
+      this.mode = MODES.includes(saved) ? saved : 'system'
       this.systemTheme = getSystemTheme()
       applyTheme(this.mode)
 
       if (this._initialized) return
-
       this._initialized = true
 
-      if (window.matchMedia) {
+      if (typeof window !== 'undefined' && window.matchMedia) {
         this._media = window.matchMedia('(prefers-color-scheme: dark)')
         this._listener = event => {
           this.systemTheme = event.matches ? 'dark' : 'light'
@@ -66,20 +70,22 @@ export const useThemeStore = defineStore('theme', {
 
     setMode(mode) {
       const normalized = MODES.includes(mode) ? mode : 'system'
-
       this.mode = normalized
       this.systemTheme = getSystemTheme()
-      localStorage.setItem(STORAGE_KEY, normalized)
+
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, normalized)
+      }
+
       applyTheme(normalized)
     },
 
     toggle() {
-      const next =
-        this.mode === 'dark'
-          ? 'light'
-          : this.mode === 'light'
-            ? 'system'
-            : 'dark'
+      const next = this.mode === 'dark'
+        ? 'light'
+        : this.mode === 'light'
+          ? 'system'
+          : 'dark'
 
       this.setMode(next)
     },

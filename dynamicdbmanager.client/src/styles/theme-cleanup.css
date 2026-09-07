@@ -1,133 +1,91 @@
-/* Theme cleanup: legacy component color bridge kept intentionally small. */
-html[data-theme="light"] body .table-main h3{color:var(--app-text)}
-html[data-theme="light"] body .table-main p,html[data-theme="light"] body .table-description,html[data-theme="light"] body .table-meta{color:var(--app-muted)}
-html[data-theme="light"] body .table-card,html[data-theme="light"] body .table-list-card{background:var(--app-surface);border-color:var(--app-border);box-shadow:var(--app-shadow)}
-html[data-theme="light"] body .open-btn{background:var(--app-control);border-color:var(--app-border);color:var(--app-primary-text)}
-html[data-theme="light"] body .open-btn:hover{background:var(--app-control-hover);border-color:var(--app-accent-border);color:var(--app-primary-text)}
-html[data-theme="light"] body .icon-action{background:var(--app-control);border-color:var(--app-border);color:var(--app-muted)}
-html[data-theme="light"] body .icon-action:hover{background:var(--app-control-hover);color:var(--app-text);border-color:var(--app-border-strong)}
-html[data-theme="light"] body .floating-circle{opacity:.55}
-
-/* =============================================================
-   FINAL THEME NORMALIZATION
-   No legacy admin/table theme files are required.
-   ============================================================= */
+/* Final compatibility layer for existing component-scoped styles. */
 
 /* Home / TableList */
-.table-grid .table-card,
-.table-grid .glass-panel,
-.home-page .glass-card {
-  color: var(--app-text);
-}
-.table-grid .table-main h3 { color: var(--app-text); }
-.table-grid .table-main p { color: var(--app-muted); }
-.table-grid .table-icon,
-.table-grid .icon-action {
-  border-color: var(--app-border);
-  background: var(--app-control-soft);
-  color: var(--app-text-soft);
-}
-.table-grid .icon-action.success { color: var(--app-success); }
-.table-grid .icon-action:hover { background: var(--app-hover); }
+html[data-theme="light"] body .table-grid .table-card,
+html[data-theme="light"] body .home-page .stat-card,
+html[data-theme="light"] body .home-page .create-section .glass-card{background:#fff;color:#172033;border-color:#dbe3ee;box-shadow:0 16px 40px rgba(56,75,105,.07)}
+html[data-theme="light"] body .table-grid .table-card:hover{background:#f8fafc;border-color:#c7d2fe;box-shadow:0 20px 50px rgba(56,75,105,.10)}
+html[data-theme="light"] body .table-main h3{color:#172033}
+html[data-theme="light"] body .table-main p{color:#64748b}
+html[data-theme="light"] body .table-main p span{color:#94a3b8}
+html[data-theme="light"] body .table-icon{color:#4f46e5;background:#eef2ff;border-color:#c7d2fe}
+html[data-theme="light"] body .meta-chip{color:#475569;background:#f8fafc;border-color:#dbe3ee}
+html[data-theme="light"] body .date-text{color:#64748b}
+html[data-theme="light"] body .open-btn{color:#3730a3;background:#f8faff;border-color:#dbe3ee}
+html[data-theme="light"] body .open-btn:hover{color:#312e81;background:#eef2ff;border-color:#c7d2fe}
+html[data-theme="light"] body .icon-action{color:#64748b;background:#fff;border-color:#dbe3ee}
+html[data-theme="light"] body .icon-action:hover{color:#172033;background:#f4f7fb;border-color:#cbd5e1}
+html[data-theme="light"] body .icon-action.success{color:#087f5b;background:#effaf5;border-color:#b9e7d1}
+html[data-theme="light"] body .icon-action.danger{color:#be123c;background:#fff1f4;border-color:#efbdc9}
+html[data-theme="light"] body .edit-icon{color:#4f46e5;background:#eef2ff}
+html[data-theme="light"] body .empty-state h3{color:#172033}
+html[data-theme="light"] body .empty-state,.html[data-theme="light"] body .empty-state p{color:#64748b}
 
-/* Generic creation form */
-.create-form .field > span,
-.create-form .field label,
-.create-form .column-switches label { color: var(--app-text-soft); }
-.create-form .field small,
-.create-form .columns-empty,
-.create-form .create-footer { color: var(--app-muted); }
-.create-form .column-card,
-.create-form .columns-empty {
-  background: var(--app-panel-soft);
-  border-color: var(--app-panel-soft-border);
-  color: var(--app-text);
-}
-.create-form .column-number { background: var(--app-control-soft); color: var(--app-muted); }
-.create-form .add-column { color: var(--app-primary); border-color: var(--app-accent-border); background: var(--app-accent-soft); }
-.create-form .remove-column { background: var(--app-control-soft); border-color: var(--app-border); color: var(--app-muted); }
-.create-form .form-error { color: var(--app-danger); background: var(--app-danger-soft); border-color: var(--app-danger-border); }
+/* CreateTableForm */
+html[data-theme="light"] body .create-form .field>span,
+html[data-theme="light"] body .create-form .columns-head h3{color:#334155}
+html[data-theme="light"] body .create-form .field small{color:#64748b}
+html[data-theme="light"] body .create-form .add-column{background:#eef2ff;color:#4f46e5;border-color:#c7d2fe}
+html[data-theme="light"] body .create-form .add-column:hover{background:#e4e9ff}
+html[data-theme="light"] body .create-form .columns-empty,
+html[data-theme="light"] body .create-form .column-card{background:#fff;border-color:#dbe3ee}
+html[data-theme="light"] body .create-form .columns-empty-icon{color:#4f46e5;background:#eef2ff}
+html[data-theme="light"] body .create-form .column-number{color:#64748b;background:#f8fafc;border-color:#e2e8f0}
+html[data-theme="light"] body .create-form .column-switches label{color:#475569}
+html[data-theme="light"] body .create-form .remove-column{color:#be123c;background:#fff1f4;border-color:#efbdc9}
+html[data-theme="light"] body .create-form .submit-button{color:#fff;background:linear-gradient(135deg,#4f46e5,#6d4be8);border-color:#c7d2fe}
+html[data-theme="light"] body .create-form .form-error{background:#fff1f2;color:#be123c;border-color:#fecdd3}
 
-/* Excel transfer modal */
-html[data-theme="light"] .excel-backdrop { background: var(--app-modal-backdrop); }
-html[data-theme="light"] .excel-modal { background: var(--app-modal); color: var(--app-text); border-color: var(--app-modal-border); box-shadow: 0 30px 90px rgba(56,75,105,.18); }
-html[data-theme="light"] .excel-header,
-html[data-theme="light"] .excel-tabs,
-html[data-theme="light"] .preview-head,
-html[data-theme="light"] .mapping-head { border-color: var(--app-panel-soft-border); }
-html[data-theme="light"] .excel-header h2,
-html[data-theme="light"] .excel-header p,
-html[data-theme="light"] .excel-tabs button,
-html[data-theme="light"] .field-card > label,
-html[data-theme="light"] .file-copy strong,
-html[data-theme="light"] .switch-label strong,
-html[data-theme="light"] .preview-head strong,
-html[data-theme="light"] .mapping-head strong,
-html[data-theme="light"] .export-hero h3 { color: var(--app-text); }
-html[data-theme="light"] .excel-header p,
-html[data-theme="light"] .field-help,
-html[data-theme="light"] .file-copy span,
-html[data-theme="light"] .switch-label small,
-html[data-theme="light"] .preview-head > span,
-html[data-theme="light"] .mapping-head > span,
-html[data-theme="light"] .export-hero p,
-html[data-theme="light"] .export-row span,
-html[data-theme="light"] .excel-footer-info { color: var(--app-muted); }
-html[data-theme="light"] .field-card,
-html[data-theme="light"] .preview-card,
-html[data-theme="light"] .mapping-card,
-html[data-theme="light"] .export-list { background: var(--app-panel-soft); border-color: var(--app-panel-soft-border); }
-html[data-theme="light"] .excel-input,
-html[data-theme="light"] .mini-btn,
-html[data-theme="light"] .file-drop,
-html[data-theme="light"] .switch-row,
-html[data-theme="light"] .mapping-pill { background: var(--app-field); border-color: var(--app-field-border); color: var(--app-text); }
-html[data-theme="light"] .excel-input::placeholder { color: var(--app-field-placeholder); }
-html[data-theme="light"] .excel-input:focus { border-color: var(--app-primary-border); box-shadow: 0 0 0 3px rgba(79,70,229,.08); }
-html[data-theme="light"] .file-drop.selected { background: var(--app-active); border-color: var(--app-accent-border); }
-html[data-theme="light"] .file-icon,
-html[data-theme="light"] .export-icon { background: var(--app-primary-soft); color: var(--app-primary); border-color: var(--app-primary-border); }
-html[data-theme="light"] .excel-close { background: var(--app-control); color: var(--app-muted); border-color: var(--app-border); }
-html[data-theme="light"] .excel-close:hover,
-html[data-theme="light"] .mini-btn:hover { background: var(--app-control-hover); color: var(--app-text); }
-html[data-theme="light"] .excel-tabs button.active { background: var(--app-active); color: var(--app-primary-text); border-color: var(--app-accent-border); }
-html[data-theme="light"] .preview-table th { background: #eef2f7; color: #334155; border-color: var(--app-table-border); }
-html[data-theme="light"] .preview-table td { color: #475569; border-color: #e8edf3; }
-html[data-theme="light"] .preview-table tr:hover td { background: #f8fafc; }
-html[data-theme="light"] .excel-error { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+/* Pagination */
+html[data-theme="light"] body .pagination{color:#64748b}
+html[data-theme="light"] body .page-btn{background:#fff;color:#475569;border-color:#dbe3ee}
+html[data-theme="light"] body .page-btn:hover:not(:disabled){background:#f4f7fb;color:#172033;border-color:#cbd5e1}
+html[data-theme="light"] body .page-btn.active{background:linear-gradient(135deg,#4f46e5,#6d4be8);color:#fff;border-color:#b9c3fa}
+html[data-theme="light"] body .ellipsis{color:#94a3b8}
+html[data-theme="light"] body .page-size select{background:#fff;color:#334155;border-color:#dbe3ee}
 
-/* TableData modals and form controls */
-html[data-theme="light"] .modal-backdrop { background: var(--app-modal-backdrop); }
-html[data-theme="light"] .modal-card { background: var(--app-modal); color: var(--app-text); border-color: var(--app-modal-border); box-shadow: 0 30px 90px rgba(56,75,105,.18); }
-html[data-theme="light"] .modal-card .modal-header,
-html[data-theme="light"] .modal-card .attachments,
-html[data-theme="light"] .modal-card .modal-actions { border-color: var(--app-panel-soft-border); }
-html[data-theme="light"] .modal-header h2,
-html[data-theme="light"] .modal-header p,
-html[data-theme="light"] .form-section h3,
-html[data-theme="light"] .field label,
-html[data-theme="light"] .check-line,
-html[data-theme="light"] .attachments-title { color: var(--app-text-soft); }
-html[data-theme="light"] .field input,
-html[data-theme="light"] .column-row input,
-html[data-theme="light"] .column-row select { background: var(--app-field); color: var(--app-text); border-color: var(--app-field-border); }
-html[data-theme="light"] .field input::placeholder,
-html[data-theme="light"] .column-row input::placeholder { color: var(--app-field-placeholder); }
-html[data-theme="light"] .form-section,
-html[data-theme="light"] .attachment { background: var(--app-panel-soft); border-color: var(--app-panel-soft-border); }
-html[data-theme="light"] .modal-close,
-html[data-theme="light"] .modal-btn { background: var(--app-control); color: var(--app-text-soft); border-color: var(--app-border); }
-html[data-theme="light"] .modal-close:hover,
-html[data-theme="light"] .modal-btn:not(.primary):not(.danger):hover { background: var(--app-control-hover); color: var(--app-text); }
-html[data-theme="light"] .file-btn { background: var(--app-primary-soft); color: var(--app-primary-text); border-color: var(--app-primary-border); }
-html[data-theme="light"] .attachment { color: var(--app-text-soft); }
-html[data-theme="light"] .attachment-btn { color: var(--app-muted); }
-html[data-theme="light"] .modal-btn.primary { background: linear-gradient(135deg,#4f46e5,#2563eb); color: #fff; }
-html[data-theme="light"] .modal-btn.danger { background: var(--app-danger-soft); color: var(--app-danger); border-color: var(--app-danger-border); }
+/* ExcelTransferModal */
+html[data-theme="light"] body .excel-backdrop{background:rgba(15,23,42,.20);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+html[data-theme="light"] body .excel-modal{background:#fff;color:#172033;border-color:#d7e0ea;box-shadow:0 30px 90px rgba(56,75,105,.18)}
+html[data-theme="light"] body .excel-header{border-color:#e5eaf1}
+html[data-theme="light"] body .excel-header h2{color:#172033}
+html[data-theme="light"] body .excel-header p{color:#64748b}
+html[data-theme="light"] body .excel-close{background:#f8fafc;color:#64748b;border-color:#dbe3ee}
+html[data-theme="light"] body .excel-close:hover{background:#eef2f7;color:#172033}
+html[data-theme="light"] body .excel-tabs{border-color:#e5eaf1}
+html[data-theme="light"] body .excel-tabs button{color:#64748b}
+html[data-theme="light"] body .excel-tabs button:hover{background:#f4f7fb;color:#172033}
+html[data-theme="light"] body .excel-tabs button.active{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
+html[data-theme="light"] body .field-card{background:#fff;color:#172033;border-color:#dbe3ee}
+html[data-theme="light"] body .field-card>label{color:#334155}
+html[data-theme="light"] body .field-help{color:#64748b}
+html[data-theme="light"] body .excel-input{background:#fff;color:#172033;border-color:#cbd5e1}
+html[data-theme="light"] body .excel-input::placeholder{color:#94a3b8}
+html[data-theme="light"] body .excel-input:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+html[data-theme="light"] body .file-drop{background:#f8fafc;border-color:#cbd5e1}
+html[data-theme="light"] body .file-drop.selected{background:#eef2ff;border-color:#a5b4fc}
+html[data-theme="light"] body .file-icon{background:#e8edff;color:#4338ca}
+html[data-theme="light"] body .file-copy strong{color:#172033}
+html[data-theme="light"] body .file-copy span{color:#64748b}
+html[data-theme="light"] body .mini-btn{background:#fff;color:#475569;border-color:#cbd5e1}
+html[data-theme="light"] body .mini-btn:hover{background:#f4f7fb;color:#172033}
+html[data-theme="light"] body .preview-card{background:#fff;border-color:#dbe3ee}
+html[data-theme="light"] body .preview-head{border-color:#e5eaf1}
+html[data-theme="light"] body .preview-head strong{color:#334155}
+html[data-theme="light"] body .preview-head>span{color:#64748b}
+html[data-theme="light"] body .preview-table th{background:#f6f8fb;color:#334155;border-color:#e2e8f0}
+html[data-theme="light"] body .preview-table td{background:#fff;color:#475569;border-color:#e8edf3}
+html[data-theme="light"] body .preview-table tr:hover td{background:#f8fafc}
+html[data-theme="light"] body .switch-row{background:#f8fafc;border-color:#e2e8f0}
+html[data-theme="light"] body .switch-label strong{color:#172033}
+html[data-theme="light"] body .switch-label small{color:#64748b}
+html[data-theme="light"] body .excel-footer{border-color:#e5eaf1}
+html[data-theme="light"] body .excel-footer .primary-btn{color:#fff;background:linear-gradient(135deg,#4f46e5,#2563eb);border-color:#aeb9f5}
+html[data-theme="light"] body .excel-error{background:#fff1f2;color:#be123c;border-color:#fecdd3}
 
-/* Shared scrollbars */
-* { scrollbar-color: var(--app-scroll-thumb) var(--app-scroll-track); scrollbar-width: thin; }
-*::-webkit-scrollbar { width: 10px; height: 10px; }
-*::-webkit-scrollbar-track { background: var(--app-scroll-track); }
-*::-webkit-scrollbar-thumb { background: var(--app-scroll-thumb); border-radius: 999px; }
-*::-webkit-scrollbar-thumb:hover { background: var(--app-scroll-thumb-hover); }
+/* Header / category menu / mobile bar */
+html[data-theme="light"] body .category-menu{background:#fff;border-color:#dbe3ee;box-shadow:0 18px 45px rgba(56,75,105,.16)}
+html[data-theme="light"] body .category-item{color:#475569}
+html[data-theme="light"] body .category-item:hover{background:#f4f7fb;color:#172033}
+html[data-theme="light"] body .new-table-btn{color:#3730a3;background:#e9edff;border-color:#c7d2fe}
+html[data-theme="light"] body .new-table-btn:hover{background:#dfe5ff}

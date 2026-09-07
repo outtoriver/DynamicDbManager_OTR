@@ -1,26 +1,32 @@
-/* Unified Table Workspace theme */
+/* Unified data workspace theme. No legacy dark palette. */
 .table-page{color:var(--app-text)}
 .table-page .tabs-panel,.table-page .toolbar,.table-page .data-panel{background:var(--app-surface);border-color:var(--app-border);box-shadow:var(--app-shadow),inset 0 1px 0 var(--app-highlight)}
-.table-page .tabs-scroll,.table-page .table-scroll{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) transparent}.table-page .tabs-scroll::-webkit-scrollbar,.table-page .table-scroll::-webkit-scrollbar{width:8px;height:8px}.table-page .tabs-scroll::-webkit-scrollbar-thumb,.table-page .table-scroll::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:999px}.table-page .tabs-scroll::-webkit-scrollbar-track,.table-page .table-scroll::-webkit-scrollbar-track{background:transparent}
+.table-page .tabs-scroll,.table-page .table-scroll{scrollbar-color:var(--scroll-thumb) transparent}
 .table-page .tab,.table-page .toolbar-btn,.table-page .tab-arrow{color:var(--app-text-soft);background:var(--app-control);border-color:var(--app-border)}
 .table-page .tab:hover,.table-page .toolbar-btn:hover,.table-page .tab-arrow:hover{color:var(--app-text);background:var(--app-control-hover);border-color:var(--app-border-strong)}
-.table-page .tab.active,.table-page .toolbar-btn.primary{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;border-color:var(--app-primary-border)}
-.table-page .toolbar-btn.excel{color:var(--app-success);background:var(--app-success-soft);border-color:var(--app-success-border)}
-.table-page .toolbar-btn.danger{color:var(--app-danger);background:var(--app-danger-soft);border-color:var(--app-danger-border)}
-.table-page .search-box,.table-page .search-box input,.table-page .search-results{background:var(--app-control);color:var(--app-text);border-color:var(--app-border)}
+.table-page .tab.active,.table-page .toolbar-btn.primary{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;border-color:var(--app-primary-border);box-shadow:0 8px 22px var(--app-primary-shadow)}
+.table-page .toolbar-btn.excel{background:var(--app-success-soft);color:var(--app-success);border-color:var(--app-success-border)}
+.table-page .toolbar-btn.danger{background:var(--app-danger-soft);color:var(--app-danger);border-color:var(--app-danger-border)}
+.table-page .toolbar-btn.active{background:var(--app-active);color:var(--app-primary-text);border-color:var(--app-accent-border)}
+.table-page .search-box input{background:var(--app-input-bg);color:var(--app-text);border-color:var(--app-border)}
 .table-page .search-box input::placeholder{color:var(--app-muted)}
+.table-page .search-box input:focus{border-color:var(--app-primary-border);box-shadow:0 0 0 3px color-mix(in srgb,var(--app-primary) 10%,transparent);outline:none}
 .table-page .data-table{color:var(--table-text);background:var(--table-bg)}
 .table-page .data-table thead th{background:var(--table-head-bg);color:var(--table-head-text);border-color:var(--table-border)}
-.table-page .data-table thead th button{color:inherit}
-.table-page .data-table tbody td{background:var(--table-row-bg);color:var(--table-text);border-color:var(--table-border)}
+.table-page .data-table thead th button{color:inherit;background:transparent}
+.table-page .data-table tbody tr{background:var(--table-row-bg)}
+.table-page .data-table tbody td{background:transparent;color:var(--table-text);border-color:var(--table-border)}
 .table-page .data-table tbody tr:hover td{background:var(--table-row-hover)}
+.table-page .data-table tbody tr.selected td{background:var(--table-row-selected)}
 .table-page .data-table .actions-col{background:var(--table-actions-bg)}
 .table-page .data-table .row-actions{background:var(--table-actions-bg);border-color:var(--table-border)}
 .table-page .data-table .row-action{color:var(--app-text-soft);background:var(--app-control);border-color:var(--app-border)}
 .table-page .data-table .row-action:hover{color:var(--app-text);background:var(--app-control-hover);border-color:var(--app-border-strong)}
 .table-page .data-table .row-action.danger{color:var(--app-danger);background:var(--app-danger-soft);border-color:var(--app-danger-border)}
 .table-page .statusbar{background:var(--table-footer-bg);color:var(--table-footer-text);border-color:var(--table-footer-border)}
-.table-page .modal-backdrop{background:color-mix(in srgb,var(--app-bg) 72%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.table-page .statusbar .page-btn,.table-page .statusbar .page-size select{background:var(--app-control);color:var(--app-text-soft);border-color:var(--app-border)}
+.table-page .statusbar .page-btn:hover:not(:disabled){background:var(--app-control-hover);color:var(--app-text)}
+.table-page .statusbar .page-btn.active{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;border-color:var(--app-primary-border)}
 .table-page .modal-card{background:var(--app-surface-strong);color:var(--app-text);border-color:var(--app-border-strong);box-shadow:var(--app-shadow-lg)}
 .table-page .modal-card input,.table-page .modal-card select,.table-page .modal-card textarea{background:var(--app-input-bg);color:var(--app-text);border-color:var(--app-border)}
 .table-page .modal-card input::placeholder,.table-page .modal-card textarea::placeholder{color:var(--app-muted)}
@@ -28,3 +34,25 @@
 .table-page .modal-card .modal-btn:hover{background:var(--app-control-hover);color:var(--app-text);border-color:var(--app-border-strong)}
 .table-page .modal-card .modal-btn.primary{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;border-color:var(--app-primary-border)}
 .table-page .modal-card .modal-btn.danger{background:var(--app-danger-soft);color:var(--app-danger);border-color:var(--app-danger-border)}
+
+/* Direct light-theme fixes for the current TableDataView scoped styles. */
+html[data-theme="light"] body .table-page .glass-panel{background:#fff;border-color:#dbe3ee;box-shadow:0 16px 40px rgba(56,75,105,.07),inset 0 1px 0 #fff}
+html[data-theme="light"] body .table-page .table-title{color:#172033}
+html[data-theme="light"] body .table-page .tab-edit{background:#eef2ff;border-color:#c7d2fe}
+html[data-theme="light"] body .table-page .tab-edit input{background:#fff;color:#172033;border-color:#cbd5e1}
+html[data-theme="light"] body .table-page .toolbar-note{color:#64748b}
+html[data-theme="light"] body .table-page .table-scroll{background:#fff}
+html[data-theme="light"] body .table-page .data-table thead th{color:#172033;background:#f6f8fb}
+html[data-theme="light"] body .table-page .data-table tbody td{color:#334155;background:#fff}
+html[data-theme="light"] body .table-page .data-table tbody tr:hover td{background:#f7f9fc}
+html[data-theme="light"] body .table-page .search-results{background:#fff;color:#172033;border-color:#dbe3ee}
+html[data-theme="light"] body .table-page .modal-backdrop{background:rgba(15,23,42,.20)}
+html[data-theme="light"] body .table-page .modal-card{background:#fff;color:#172033;border-color:#d7e0ea;box-shadow:0 30px 90px rgba(56,75,105,.18)}
+html[data-theme="light"] body .table-page .form-section{background:#f8fafc;border-color:#e2e8f0}
+html[data-theme="light"] body .table-page .field label{color:#334155}
+html[data-theme="light"] body .table-page .field small{color:#64748b}
+html[data-theme="light"] body .table-page .modal-card input,html[data-theme="light"] body .table-page .modal-card select,html[data-theme="light"] body .table-page .modal-card textarea{background:#fff;color:#172033;border-color:#cbd5e1}
+html[data-theme="light"] body .table-page .modal-card input:focus,html[data-theme="light"] body .table-page .modal-card select:focus,html[data-theme="light"] body .table-page .modal-card textarea:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+html[data-theme="light"] body .table-page .attachment,html[data-theme="light"] body .table-page .file-btn{background:#f8fafc;color:#475569;border-color:#dbe3ee}
+html[data-theme="light"] body .table-page .modal-close{background:#f8fafc;color:#64748b;border-color:#dbe3ee}
+html[data-theme="light"] body .table-page .modal-close:hover{background:#eef2f7;color:#172033}
