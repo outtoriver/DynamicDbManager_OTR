@@ -1,19 +1,39 @@
 import { defineStore } from 'pinia'
 
+export const BACKGROUND_TYPES = [
+  'galaxy',
+  'nebula3d',
+  'aurora',
+  'gradient',
+  'particles',
+  'cybergrid',
+  'black'
+]
+
+export const DEFAULT_BACKGROUND = 'particles'
+
 export const useBackgroundStore = defineStore('background', {
   state: () => ({
-    type: 'galaxy' // 'galaxy', 'gradient', 'particles'
+    // Частицы — безопасный и нейтральный фон по умолчанию.
+    type: DEFAULT_BACKGROUND
   }),
+
   actions: {
     setType(type) {
-      this.type = type
-      localStorage.setItem('backgroundType', type)
+      const normalized = BACKGROUND_TYPES.includes(type)
+        ? type
+        : DEFAULT_BACKGROUND
+
+      this.type = normalized
+      localStorage.setItem('backgroundType', normalized)
     },
+
     loadFromStorage() {
       const saved = localStorage.getItem('backgroundType')
-      if (saved && ['galaxy', 'gradient', 'particles'].includes(saved)) {
-        this.type = saved
-      }
+
+      this.type = BACKGROUND_TYPES.includes(saved)
+        ? saved
+        : DEFAULT_BACKGROUND
     }
   }
 })

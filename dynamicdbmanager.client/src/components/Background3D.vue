@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
 
 const container = ref(null)
@@ -22,7 +22,6 @@ let animationId = null
 let lastFrameTime = 0
 let isActive = true
 let isDestroyed = false
-
 let handleResize = null
 let handleVisibilityChange = null
 let handleThemeChange = null
@@ -37,8 +36,10 @@ function currentTheme() {
 
 function applyRendererTheme() {
   if (!renderer) return
-  const color = currentTheme() === 'light' ? 0xeef3f9 : 0x050510
-  renderer.setClearColor(color, 1)
+
+  // ВАЖНО: WebGL canvas больше не рисует собственный непрозрачный фон.
+  // Это предотвращает влияние Galaxy на фон/UI приложения.
+  renderer.setClearColor(0x000000, 0)
 }
 
 function getPerformanceProfile() {
@@ -148,12 +149,15 @@ function buildGalaxy(profile, theme = currentTheme()) {
   // ------------------------------------------------------------
   // 1. ЯДРО
   // ------------------------------------------------------------
-
   const corePositions = new Float32Array(coreCount * 3)
   const coreColors = new Float32Array(coreCount * 3)
 
-  const coreColor1 = new THREE.Color(theme === 'light' ? 0x315ea8 : 0xffdd77)
-  const coreColor2 = new THREE.Color(theme === 'light' ? 0x4f46a5 : 0xffaa44)
+  const coreColor1 = new THREE.Color(
+    theme === 'light' ? 0x315ea8 : 0xffdd77
+  )
+  const coreColor2 = new THREE.Color(
+    theme === 'light' ? 0x4f46a5 : 0xffaa44
+  )
 
   for (let i = 0; i < coreCount; i++) {
     const i3 = i * 3
@@ -162,7 +166,8 @@ function buildGalaxy(profile, theme = currentTheme()) {
     const phi = Math.acos(2 * Math.random() - 1)
 
     corePositions[i3] = r * Math.sin(phi) * Math.cos(theta)
-    corePositions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.6
+    corePositions[i3 + 1] =
+      r * Math.sin(phi) * Math.sin(theta) * 0.6
     corePositions[i3 + 2] = r * Math.cos(phi)
 
     tempColor.copy(coreColor1).lerp(coreColor2, Math.random())
@@ -184,9 +189,13 @@ function buildGalaxy(profile, theme = currentTheme()) {
   corePoints = new THREE.Points(
     coreGeometry,
     new THREE.PointsMaterial({
-      size: theme === 'light' ? (profile.lowPower ? 0.19 : 0.21) : (profile.lowPower ? 0.23 : 0.25),
+      size: theme === 'light'
+        ? (profile.lowPower ? 0.19 : 0.21)
+        : (profile.lowPower ? 0.23 : 0.25),
       map: glowTexture,
-      blending: theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending,
+      blending: theme === 'light'
+        ? THREE.NormalBlending
+        : THREE.AdditiveBlending,
       depthWrite: false,
       depthTest: true,
       transparent: true,
@@ -201,16 +210,23 @@ function buildGalaxy(profile, theme = currentTheme()) {
   // ------------------------------------------------------------
   // 2. СПИРАЛЬНЫЕ РУКАВА
   // ------------------------------------------------------------
-
   const armCount = 3
   const totalStars = armCount * starsPerArm
   const starPositions = new Float32Array(totalStars * 3)
   const starColors = new Float32Array(totalStars * 3)
 
-  const colorBlue = new THREE.Color(theme === 'light' ? 0x2563eb : 0x6db3f2)
-  const colorPurple = new THREE.Color(theme === 'light' ? 0x6366f1 : 0xa78bfa)
-  const colorPink = new THREE.Color(theme === 'light' ? 0xc026d3 : 0xf472b6)
-  const colorCyan = new THREE.Color(theme === 'light' ? 0x0891b2 : 0x67e8f9)
+  const colorBlue = new THREE.Color(
+    theme === 'light' ? 0x2563eb : 0x6db3f2
+  )
+  const colorPurple = new THREE.Color(
+    theme === 'light' ? 0x6366f1 : 0xa78bfa
+  )
+  const colorPink = new THREE.Color(
+    theme === 'light' ? 0xc026d3 : 0xf472b6
+  )
+  const colorCyan = new THREE.Color(
+    theme === 'light' ? 0x0891b2 : 0x67e8f9
+  )
 
   let index = 0
 
@@ -226,11 +242,14 @@ function buildGalaxy(profile, theme = currentTheme()) {
 
       const offsetX = (Math.random() - 0.5) * spread * 1.2
       const offsetZ = (Math.random() - 0.5) * spread * 1.2
-      const offsetY = (Math.random() - 0.5) * 0.5 * (1 - t * 0.5)
+      const offsetY =
+        (Math.random() - 0.5) * 0.5 * (1 - t * 0.5)
 
-      starPositions[i3] = Math.cos(spiralAngle) * radius + offsetX
+      starPositions[i3] =
+        Math.cos(spiralAngle) * radius + offsetX
       starPositions[i3 + 1] = offsetY
-      starPositions[i3 + 2] = Math.sin(spiralAngle) * radius + offsetZ
+      starPositions[i3 + 2] =
+        Math.sin(spiralAngle) * radius + offsetZ
 
       const rand = Math.random()
 
@@ -265,9 +284,13 @@ function buildGalaxy(profile, theme = currentTheme()) {
   starPoints = new THREE.Points(
     starGeometry,
     new THREE.PointsMaterial({
-      size: theme === 'light' ? (profile.lowPower ? 0.20 : 0.24) : (profile.lowPower ? 0.25 : 0.3),
+      size: theme === 'light'
+        ? (profile.lowPower ? 0.20 : 0.24)
+        : (profile.lowPower ? 0.25 : 0.3),
       map: glowTexture,
-      blending: theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending,
+      blending: theme === 'light'
+        ? THREE.NormalBlending
+        : THREE.AdditiveBlending,
       depthWrite: false,
       depthTest: true,
       transparent: true,
@@ -280,14 +303,17 @@ function buildGalaxy(profile, theme = currentTheme()) {
   galaxyGroup.add(starPoints)
 
   // ------------------------------------------------------------
-  // 3. ТУМАННОСТЬ
+  // 3. МЯГКАЯ ТУМАННОСТЬ
   // ------------------------------------------------------------
-
   const fogPositions = new Float32Array(fogCount * 3)
   const fogColors = new Float32Array(fogCount * 3)
 
-  const fogColor1 = new THREE.Color(theme === 'light' ? 0x22c55e : 0x6ee7b7)
-  const fogColor2 = new THREE.Color(theme === 'light' ? 0x818cf8 : 0xa78bfa)
+  const fogColor1 = new THREE.Color(
+    theme === 'light' ? 0x22c55e : 0x6ee7b7
+  )
+  const fogColor2 = new THREE.Color(
+    theme === 'light' ? 0x818cf8 : 0xa78bfa
+  )
 
   for (let i = 0; i < fogCount; i++) {
     const i3 = i * 3
@@ -318,9 +344,13 @@ function buildGalaxy(profile, theme = currentTheme()) {
   fogPoints = new THREE.Points(
     fogGeometry,
     new THREE.PointsMaterial({
-      size: theme === 'light' ? (profile.lowPower ? 1.7 : 2.0) : (profile.lowPower ? 2.1 : 2.5),
+      size: theme === 'light'
+        ? (profile.lowPower ? 1.7 : 2.0)
+        : (profile.lowPower ? 2.1 : 2.5),
       map: glowTexture,
-      blending: theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending,
+      blending: theme === 'light'
+        ? THREE.NormalBlending
+        : THREE.AdditiveBlending,
       depthWrite: false,
       depthTest: true,
       transparent: true,
@@ -335,7 +365,6 @@ function buildGalaxy(profile, theme = currentTheme()) {
   // ------------------------------------------------------------
   // 4. ДАЛЁКИЕ ЗВЁЗДЫ
   // ------------------------------------------------------------
-
   const bgPositions = new Float32Array(bgStarCount * 3)
   const bgColors = new Float32Array(bgStarCount * 3)
 
@@ -377,9 +406,13 @@ function buildGalaxy(profile, theme = currentTheme()) {
   bgPoints = new THREE.Points(
     bgGeometry,
     new THREE.PointsMaterial({
-      size: theme === 'light' ? (profile.lowPower ? 0.075 : 0.09) : (profile.lowPower ? 0.1 : 0.12),
+      size: theme === 'light'
+        ? (profile.lowPower ? 0.075 : 0.09)
+        : (profile.lowPower ? 0.1 : 0.12),
       map: glowTexture,
-      blending: theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending,
+      blending: theme === 'light'
+        ? THREE.NormalBlending
+        : THREE.AdditiveBlending,
       depthWrite: false,
       depthTest: true,
       transparent: true,
@@ -395,9 +428,7 @@ function buildGalaxy(profile, theme = currentTheme()) {
 function disposeObject(object) {
   if (!object) return
 
-  if (object.geometry) {
-    object.geometry.dispose()
-  }
+  object.geometry?.dispose?.()
 
   if (object.material) {
     const materials = Array.isArray(object.material)
@@ -405,7 +436,7 @@ function disposeObject(object) {
       : [object.material]
 
     for (const material of materials) {
-      material.dispose()
+      material.dispose?.()
     }
   }
 }
@@ -434,12 +465,23 @@ function disposeScene() {
 }
 
 function renderFrame(now) {
-  if (isDestroyed || !isActive || !renderer || !scene || !camera) {
+  if (
+    isDestroyed ||
+    !isActive ||
+    !renderer ||
+    !scene ||
+    !camera
+  ) {
     return
   }
 
   const width = window.innerWidth
-  const targetFps = reducedMotion ? 24 : width <= 768 ? 30 : 45
+  const targetFps = reducedMotion
+    ? 24
+    : width <= 768
+      ? 30
+      : 45
+
   const frameInterval = 1000 / targetFps
 
   if (now - lastFrameTime < frameInterval) {
@@ -447,13 +489,16 @@ function renderFrame(now) {
     return
   }
 
-  const delta = Math.min(now - lastFrameTime, 100) / 16.6667
+  const delta =
+    Math.min(now - lastFrameTime, 100) / 16.6667
+
   lastFrameTime = now
 
   if (!reducedMotion && galaxyGroup) {
     galaxyGroup.rotation.y += 0.0008 * delta
     galaxyGroup.rotation.x +=
-      (Math.sin(now * 0.0001) * 0.01 - galaxyGroup.rotation.x) * 0.015
+      (Math.sin(now * 0.0001) * 0.01 - galaxyGroup.rotation.x) *
+      0.015
   }
 
   if (!reducedMotion && bgPoints) {
@@ -466,12 +511,14 @@ function renderFrame(now) {
 
 function startAnimation() {
   if (animationId || isDestroyed) return
+
   lastFrameTime = performance.now()
   animationId = requestAnimationFrame(renderFrame)
 }
 
 function stopAnimation() {
   if (!animationId) return
+
   cancelAnimationFrame(animationId)
   animationId = null
 }
@@ -482,11 +529,12 @@ onMounted(() => {
   try {
     const profile = getPerformanceProfile()
     currentProfile = profile
+
     const width = window.innerWidth
     const height = window.innerHeight
 
     scene = new THREE.Scene()
-    scene.background = new THREE.Color(currentTheme() === 'light' ? 0xeef3f9 : 0x050510)
+    scene.background = null
 
     camera = new THREE.PerspectiveCamera(
       50,
@@ -499,7 +547,7 @@ onMounted(() => {
 
     renderer = new THREE.WebGLRenderer({
       antialias: width > 768,
-      alpha: false,
+      alpha: true,
       powerPreference: 'high-performance',
       stencil: false,
       depth: true
@@ -507,7 +555,7 @@ onMounted(() => {
 
     renderer.setPixelRatio(profile.dpr)
     renderer.setSize(width, height, false)
-    applyRendererTheme()
+    renderer.setClearColor(0x000000, 0)
 
     if ('outputColorSpace' in renderer) {
       renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -519,6 +567,7 @@ onMounted(() => {
     }
 
     renderer.domElement.setAttribute('aria-hidden', 'true')
+    renderer.domElement.style.background = 'transparent'
     container.value.appendChild(renderer.domElement)
 
     buildGalaxy(profile, currentTheme())
@@ -551,21 +600,49 @@ onMounted(() => {
       }
     }
 
-    window.addEventListener('resize', handleResize, { passive: true })
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener(
+      'resize',
+      handleResize,
+      { passive: true }
+    )
+    document.addEventListener(
+      'visibilitychange',
+      handleVisibilityChange
+    )
+
     handleThemeChange = () => {
-      applyRendererTheme()
-      if (!scene || !currentProfile || isDestroyed) return
+      if (
+        !scene ||
+        !currentProfile ||
+        isDestroyed
+      ) {
+        return
+      }
+
+      // Пересоздаём только графические объекты Galaxy.
+      // Базовый фон остаётся у приложения, а canvas полностью прозрачен.
       stopAnimation()
       disposeScene()
-      buildGalaxy(currentProfile, currentTheme())
+      applyRendererTheme()
+      buildGalaxy(
+        currentProfile,
+        currentTheme()
+      )
       startAnimation()
     }
-    window.addEventListener('themechange', handleThemeChange)
+
+    window.addEventListener(
+      'themechange',
+      handleThemeChange
+    )
 
     startAnimation()
-  } catch (error) {
-    console.error('[Background3D] initialization error:', error)
+  }
+  catch (error) {
+    console.error(
+      '[Background3D] initialization error:',
+      error
+    )
   }
 })
 
@@ -574,16 +651,26 @@ onBeforeUnmount(() => {
   stopAnimation()
 
   if (handleResize) {
-    window.removeEventListener('resize', handleResize)
+    window.removeEventListener(
+      'resize',
+      handleResize
+    )
     handleResize = null
   }
 
   if (handleVisibilityChange) {
-    document.removeEventListener('visibilitychange', handleVisibilityChange)
+    document.removeEventListener(
+      'visibilitychange',
+      handleVisibilityChange
+    )
     handleVisibilityChange = null
   }
+
   if (handleThemeChange) {
-    window.removeEventListener('themechange', handleThemeChange)
+    window.removeEventListener(
+      'themechange',
+      handleThemeChange
+    )
     handleThemeChange = null
   }
 
@@ -598,7 +685,9 @@ onBeforeUnmount(() => {
       renderer.domElement &&
       renderer.domElement.parentNode === container.value
     ) {
-      container.value.removeChild(renderer.domElement)
+      container.value.removeChild(
+        renderer.domElement
+      )
     }
   }
 
@@ -617,12 +706,13 @@ onBeforeUnmount(() => {
   height: 100%;
   pointer-events: none;
   overflow: hidden;
-  background: #050510;
+  background: transparent !important;
 }
 
 .background-3d :deep(canvas) {
   display: block;
   width: 100%;
   height: 100%;
+  background: transparent !important;
 }
 </style>
