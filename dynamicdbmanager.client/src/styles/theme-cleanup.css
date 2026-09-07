@@ -1,91 +1,282 @@
-/* Final compatibility layer for existing component-scoped styles. */
+/* Theme bridge for SFCs that still contain local hard-coded colours. */
 
-/* Home / TableList */
-html[data-theme="light"] body .table-grid .table-card,
-html[data-theme="light"] body .home-page .stat-card,
-html[data-theme="light"] body .home-page .create-section .glass-card{background:#fff;color:#172033;border-color:#dbe3ee;box-shadow:0 16px 40px rgba(56,75,105,.07)}
-html[data-theme="light"] body .table-grid .table-card:hover{background:#f8fafc;border-color:#c7d2fe;box-shadow:0 20px 50px rgba(56,75,105,.10)}
-html[data-theme="light"] body .table-main h3{color:#172033}
-html[data-theme="light"] body .table-main p{color:#64748b}
-html[data-theme="light"] body .table-main p span{color:#94a3b8}
-html[data-theme="light"] body .table-icon{color:#4f46e5;background:#eef2ff;border-color:#c7d2fe}
-html[data-theme="light"] body .meta-chip{color:#475569;background:#f8fafc;border-color:#dbe3ee}
-html[data-theme="light"] body .date-text{color:#64748b}
-html[data-theme="light"] body .open-btn{color:#3730a3;background:#f8faff;border-color:#dbe3ee}
-html[data-theme="light"] body .open-btn:hover{color:#312e81;background:#eef2ff;border-color:#c7d2fe}
-html[data-theme="light"] body .icon-action{color:#64748b;background:#fff;border-color:#dbe3ee}
-html[data-theme="light"] body .icon-action:hover{color:#172033;background:#f4f7fb;border-color:#cbd5e1}
-html[data-theme="light"] body .icon-action.success{color:#087f5b;background:#effaf5;border-color:#b9e7d1}
-html[data-theme="light"] body .icon-action.danger{color:#be123c;background:#fff1f4;border-color:#efbdc9}
-html[data-theme="light"] body .edit-icon{color:#4f46e5;background:#eef2ff}
-html[data-theme="light"] body .empty-state h3{color:#172033}
-html[data-theme="light"] body .empty-state,.html[data-theme="light"] body .empty-state p{color:#64748b}
+/* Home / table cards. */
+.home-page,.table-grid{color:var(--app-text)}
+.home-page .eyebrow,.home-page .section-heading p,.home-page .stat-card small{color:var(--app-muted)}
+.home-page .hero-button,.home-page .circle-btn,.table-grid .meta-chip,.table-grid .open-btn,.table-grid .icon-action{color:var(--app-text-soft);background:var(--app-control);border-color:var(--app-border)}
+.home-page .hero-button:hover,.home-page .circle-btn:hover,.table-grid .meta-chip:hover,.table-grid .open-btn:hover,.table-grid .icon-action:hover{color:var(--app-text);background:var(--app-control-hover);border-color:var(--app-accent-border)}
+.home-page .hero-button.primary{color:#fff;background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));border-color:var(--app-primary-border)}
+.home-page .hero-button.excel,.table-grid .icon-action.success{color:var(--app-success);background:var(--app-success-soft);border-color:var(--app-success-border)}
+.home-page .search-box{background:var(--app-control);border-color:var(--app-border)}
+.home-page .search-box input{color:var(--app-text);background:transparent}
+.home-page .search-box input::placeholder{color:var(--app-muted)}
+.table-grid .table-card{color:var(--app-text);background:var(--app-surface);border-color:var(--app-border)}
+.table-grid .table-card:hover{background:var(--app-control-hover);border-color:var(--app-accent-border)}
+.table-grid .table-main h3{color:var(--app-text)}
+.table-grid .table-main p,.table-grid .table-main p span,.table-grid .date-text{color:var(--app-muted)}
+.table-grid .table-icon{color:var(--app-primary);background:var(--app-accent-soft);border-color:var(--app-accent-border)}
+.table-grid .icon-action.danger{color:var(--app-danger);background:var(--app-danger-soft);border-color:var(--app-danger-border)}
+.table-grid .empty-state,.table-grid .empty-state p{color:var(--app-muted)}
+.table-grid .empty-state h3{color:var(--app-text)}
+.table-grid .empty-icon{color:var(--app-primary);background:var(--app-control);border-color:var(--app-border)}
 
-/* CreateTableForm */
-html[data-theme="light"] body .create-form .field>span,
-html[data-theme="light"] body .create-form .columns-head h3{color:#334155}
-html[data-theme="light"] body .create-form .field small{color:#64748b}
-html[data-theme="light"] body .create-form .add-column{background:#eef2ff;color:#4f46e5;border-color:#c7d2fe}
-html[data-theme="light"] body .create-form .add-column:hover{background:#e4e9ff}
-html[data-theme="light"] body .create-form .columns-empty,
-html[data-theme="light"] body .create-form .column-card{background:#fff;border-color:#dbe3ee}
-html[data-theme="light"] body .create-form .columns-empty-icon{color:#4f46e5;background:#eef2ff}
-html[data-theme="light"] body .create-form .column-number{color:#64748b;background:#f8fafc;border-color:#e2e8f0}
-html[data-theme="light"] body .create-form .column-switches label{color:#475569}
-html[data-theme="light"] body .create-form .remove-column{color:#be123c;background:#fff1f4;border-color:#efbdc9}
-html[data-theme="light"] body .create-form .submit-button{color:#fff;background:linear-gradient(135deg,#4f46e5,#6d4be8);border-color:#c7d2fe}
-html[data-theme="light"] body .create-form .form-error{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+/* TableDataView local scoped styles. Specificity intentionally exceeds scoped selectors. */
+html[data-theme="dark"] body .table-page .table-title,
+html[data-theme="light"] body .table-page .table-title{color:var(--app-text)!important}
+html[data-theme="dark"] body .table-page .eyebrow,
+html[data-theme="light"] body .table-page .eyebrow,
+html[data-theme="dark"] body .table-page .table-subtitle{color:var(--app-muted)!important}
+html[data-theme="dark"] body .table-page .glass-panel,
+html[data-theme="light"] body .table-page .glass-panel{background:var(--app-surface)!important;border-color:var(--app-border)!important;box-shadow:var(--app-shadow),inset 0 1px 0 var(--app-highlight)!important;color:var(--app-text)!important}
+html[data-theme="dark"] body .table-page .tabs-panel,
+html[data-theme="light"] body .table-page .tabs-panel{background:var(--app-surface)!important}
+html[data-theme="dark"] body .table-page .tab,
+html[data-theme="light"] body .table-page .tab{background:var(--app-control)!important;color:var(--app-text-soft)!important;border-color:var(--app-border)!important}
+html[data-theme="dark"] body .table-page .tab:hover,
+html[data-theme="light"] body .table-page .tab:hover{background:var(--app-control-hover)!important;color:var(--app-text)!important}
+html[data-theme="dark"] body .table-page .tab.active,
+html[data-theme="light"] body .table-page .tab.active{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2))!important;color:#fff!important;border-color:var(--app-primary-border)!important}
+html[data-theme="dark"] body .table-page .tab-edit input,
+html[data-theme="light"] body .table-page .tab-edit input,
+html[data-theme="dark"] body .table-page .search-box input,
+html[data-theme="light"] body .table-page .search-box input{background:var(--app-input-bg)!important;color:var(--app-text)!important;border-color:var(--app-border)!important}
+html[data-theme="dark"] body .table-page .tab-arrow{background:var(--app-control)!important;color:var(--app-text-soft)!important;border-color:var(--app-border)!important}
+html[data-theme="light"] body .table-page .tab-arrow{background:var(--app-control)!important;color:var(--app-text-soft)!important;border-color:var(--app-border)!important}
+html[data-theme="dark"] body .table-page .toolbar-btn,
+html[data-theme="light"] body .table-page .toolbar-btn{background:var(--app-control)!important;color:var(--app-text-soft)!important;border-color:var(--app-border)!important}
+html[data-theme="dark"] body .table-page .toolbar-btn:hover,
+html[data-theme="light"] body .table-page .toolbar-btn:hover{background:var(--app-control-hover)!important;color:var(--app-text)!important}
+html[data-theme="dark"] body .table-page .toolbar-btn.primary,
+html[data-theme="light"] body .table-page .toolbar-btn.primary{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2))!important;color:#fff!important;border-color:var(--app-primary-border)!important}
+html[data-theme="dark"] body .table-page .toolbar-btn.excel,
+html[data-theme="light"] body .table-page .toolbar-btn.excel{background:var(--app-success-soft)!important;color:var(--app-success)!important;border-color:var(--app-success-border)!important}
+html[data-theme="dark"] body .table-page .toolbar-btn.danger,
+html[data-theme="light"] body .table-page .toolbar-btn.danger{background:var(--app-danger-soft)!important;color:var(--app-danger)!important;border-color:var(--app-danger-border)!important}
+html[data-theme="dark"] body .table-page .toolbar-note{color:var(--app-muted)!important}
+html[data-theme="dark"] body .table-page .data-panel,
+html[data-theme="light"] body .table-page .data-panel{background:var(--app-surface)!important}
+html[data-theme="dark"] body .table-page .table-scroll,
+html[data-theme="light"] body .table-page .table-scroll{background:transparent!important}
+html[data-theme="dark"] body .table-page .data-table,
+html[data-theme="light"] body .table-page .data-table{background:transparent!important;color:var(--table-text)!important}
+html[data-theme="dark"] body .table-page .data-table th,
+html[data-theme="light"] body .table-page .data-table th{background:var(--table-head-bg)!important;color:var(--table-head-text)!important;border-color:var(--table-border)!important}
+html[data-theme="dark"] body .table-page .data-table td,
+html[data-theme="light"] body .table-page .data-table td{background:var(--table-row-bg)!important;color:var(--table-text)!important;border-color:var(--table-border)!important}
+html[data-theme="dark"] body .table-page .data-table tbody tr,
+html[data-theme="light"] body .table-page .data-table tbody tr,
+html[data-theme="dark"] body .table-page .data-table tbody tr:nth-child(even),
+html[data-theme="light"] body .table-page .data-table tbody tr:nth-child(even){background:var(--table-row-bg)!important}
+html[data-theme="dark"] body .table-page .data-table tbody tr:hover td,
+html[data-theme="light"] body .table-page .data-table tbody tr:hover td{background:var(--table-row-hover)!important}
+html[data-theme="dark"] body .table-page .data-table tbody tr.selected td,
+html[data-theme="light"] body .table-page .data-table tbody tr.selected td{background:var(--table-row-selected)!important}
+html[data-theme="dark"] body .table-page .data-table .actions-col,
+html[data-theme="light"] body .table-page .data-table .actions-col{width:42px!important;min-width:42px!important;max-width:42px!important;background:var(--table-actions-bg)!important}
+html[data-theme="dark"] body .table-page .data-table thead .actions-col,
+html[data-theme="light"] body .table-page .data-table thead .actions-col{background:var(--table-head-bg)!important}
+html[data-theme="dark"] body .table-page .data-table tbody tr:hover .actions-col,
+html[data-theme="light"] body .table-page .data-table tbody tr:hover .actions-col{background:var(--table-row-hover)!important}
+html[data-theme="dark"] body .table-page .cell-text{color:var(--table-text)!important}
+html[data-theme="light"] body .table-page .cell-text{color:var(--table-text)!important}
+html[data-theme="dark"] body .table-page .bool-cell.on,
+html[data-theme="light"] body .table-page .bool-cell.on{background:var(--app-success-soft)!important;color:var(--app-success)!important}
+html[data-theme="dark"] body .table-page .bool-cell.off,
+html[data-theme="light"] body .table-page .bool-cell.off{background:var(--app-control-soft)!important;color:var(--app-muted)!important}
+html[data-theme="dark"] body .table-page .table-loading,
+html[data-theme="dark"] body .table-page .table-empty,
+html[data-theme="light"] body .table-page .table-loading,
+html[data-theme="light"] body .table-page .table-empty{color:var(--app-muted)!important}
+html[data-theme="dark"] body .table-page .modal-backdrop,
+html[data-theme="light"] body .table-page .modal-backdrop{background:color-mix(in srgb,var(--app-bg) 72%,transparent)!important}
+html[data-theme="dark"] body .modal-card,
+html[data-theme="light"] body .modal-card{background:var(--app-surface-strong)!important;color:var(--app-text)!important;border-color:var(--app-border-strong)!important;box-shadow:var(--app-shadow-lg)!important}
+html[data-theme="dark"] body .modal-header h2,
+html[data-theme="light"] body .modal-header h2,
+html[data-theme="dark"] body .form-section h3,
+html[data-theme="light"] body .form-section h3,
+html[data-theme="dark"] body .field label,
+html[data-theme="light"] body .field label{color:var(--app-text)!important}
+html[data-theme="dark"] body .modal-header p,
+html[data-theme="light"] body .modal-header p,
+html[data-theme="dark"] body .field small,
+html[data-theme="light"] body .field small,
+html[data-theme="dark"] body .attachments-title,
+html[data-theme="light"] body .attachments-title{color:var(--app-muted)!important}
+html[data-theme="dark"] body .modal-card input,
+html[data-theme="light"] body .modal-card input,
+html[data-theme="dark"] body .modal-card select,
+html[data-theme="light"] body .modal-card select,
+html[data-theme="dark"] body .modal-card textarea,
+html[data-theme="light"] body .modal-card textarea{background:var(--app-input-bg)!important;color:var(--app-text)!important;border-color:var(--app-border)!important}
+html[data-theme="dark"] body .form-section,
+html[data-theme="light"] body .form-section{background:var(--app-control-soft)!important;border-color:var(--app-border)!important}
+html[data-theme="dark"] body .attachment,
+html[data-theme="light"] body .attachment{background:var(--app-control)!important;border-color:var(--app-border)!important;color:var(--app-text-soft)!important}
+html[data-theme="dark"] body .modal-close,
+html[data-theme="light"] body .modal-close,
+html[data-theme="dark"] body .modal-btn,
+html[data-theme="light"] body .modal-btn,
+html[data-theme="dark"] body .column-row input,
+html[data-theme="light"] body .column-row input,
+html[data-theme="dark"] body .column-row select,
+html[data-theme="light"] body .column-row select{background:var(--app-control)!important;color:var(--app-text)!important;border-color:var(--app-border)!important}
+html[data-theme="dark"] body .modal-btn.primary,
+html[data-theme="light"] body .modal-btn.primary{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2))!important;color:#fff!important;border-color:var(--app-primary-border)!important}
+html[data-theme="dark"] body .modal-btn.danger,
+html[data-theme="light"] body .modal-btn.danger{background:var(--app-danger-soft)!important;color:var(--app-danger)!important;border-color:var(--app-danger-border)!important}
+html[data-theme="dark"] body .add-field,
+html[data-theme="light"] body .add-field{color:var(--app-primary)!important}
 
-/* Pagination */
-html[data-theme="light"] body .pagination{color:#64748b}
-html[data-theme="light"] body .page-btn{background:#fff;color:#475569;border-color:#dbe3ee}
-html[data-theme="light"] body .page-btn:hover:not(:disabled){background:#f4f7fb;color:#172033;border-color:#cbd5e1}
-html[data-theme="light"] body .page-btn.active{background:linear-gradient(135deg,#4f46e5,#6d4be8);color:#fff;border-color:#b9c3fa}
-html[data-theme="light"] body .ellipsis{color:#94a3b8}
-html[data-theme="light"] body .page-size select{background:#fff;color:#334155;border-color:#dbe3ee}
+/* Create-table form. */
+html[data-theme="light"] body .column-card{background:#fff!important;border-color:var(--app-border)!important;color:var(--app-text)!important}
+html[data-theme="light"] body .column-number{background:var(--app-control-soft)!important;color:var(--app-muted)!important}
+html[data-theme="light"] body .remove-column{background:var(--app-control)!important;border-color:var(--app-border)!important;color:var(--app-muted)!important}
+html[data-theme="light"] body .remove-column:hover{background:var(--app-danger-soft)!important;color:var(--app-danger)!important}
+html[data-theme="light"] body .create-footer{border-color:var(--app-border)!important;color:var(--app-muted)!important}
+html[data-theme="light"] body .form-error{background:var(--app-danger-soft)!important;border-color:var(--app-danger-border)!important;color:var(--app-danger)!important}
 
-/* ExcelTransferModal */
-html[data-theme="light"] body .excel-backdrop{background:rgba(15,23,42,.20);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-html[data-theme="light"] body .excel-modal{background:#fff;color:#172033;border-color:#d7e0ea;box-shadow:0 30px 90px rgba(56,75,105,.18)}
-html[data-theme="light"] body .excel-header{border-color:#e5eaf1}
-html[data-theme="light"] body .excel-header h2{color:#172033}
-html[data-theme="light"] body .excel-header p{color:#64748b}
-html[data-theme="light"] body .excel-close{background:#f8fafc;color:#64748b;border-color:#dbe3ee}
-html[data-theme="light"] body .excel-close:hover{background:#eef2f7;color:#172033}
-html[data-theme="light"] body .excel-tabs{border-color:#e5eaf1}
-html[data-theme="light"] body .excel-tabs button{color:#64748b}
-html[data-theme="light"] body .excel-tabs button:hover{background:#f4f7fb;color:#172033}
-html[data-theme="light"] body .excel-tabs button.active{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
-html[data-theme="light"] body .field-card{background:#fff;color:#172033;border-color:#dbe3ee}
-html[data-theme="light"] body .field-card>label{color:#334155}
-html[data-theme="light"] body .field-help{color:#64748b}
-html[data-theme="light"] body .excel-input{background:#fff;color:#172033;border-color:#cbd5e1}
-html[data-theme="light"] body .excel-input::placeholder{color:#94a3b8}
-html[data-theme="light"] body .excel-input:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
-html[data-theme="light"] body .file-drop{background:#f8fafc;border-color:#cbd5e1}
-html[data-theme="light"] body .file-drop.selected{background:#eef2ff;border-color:#a5b4fc}
-html[data-theme="light"] body .file-icon{background:#e8edff;color:#4338ca}
-html[data-theme="light"] body .file-copy strong{color:#172033}
-html[data-theme="light"] body .file-copy span{color:#64748b}
-html[data-theme="light"] body .mini-btn{background:#fff;color:#475569;border-color:#cbd5e1}
-html[data-theme="light"] body .mini-btn:hover{background:#f4f7fb;color:#172033}
-html[data-theme="light"] body .preview-card{background:#fff;border-color:#dbe3ee}
-html[data-theme="light"] body .preview-head{border-color:#e5eaf1}
-html[data-theme="light"] body .preview-head strong{color:#334155}
-html[data-theme="light"] body .preview-head>span{color:#64748b}
-html[data-theme="light"] body .preview-table th{background:#f6f8fb;color:#334155;border-color:#e2e8f0}
-html[data-theme="light"] body .preview-table td{background:#fff;color:#475569;border-color:#e8edf3}
-html[data-theme="light"] body .preview-table tr:hover td{background:#f8fafc}
-html[data-theme="light"] body .switch-row{background:#f8fafc;border-color:#e2e8f0}
-html[data-theme="light"] body .switch-label strong{color:#172033}
-html[data-theme="light"] body .switch-label small{color:#64748b}
-html[data-theme="light"] body .excel-footer{border-color:#e5eaf1}
-html[data-theme="light"] body .excel-footer .primary-btn{color:#fff;background:linear-gradient(135deg,#4f46e5,#2563eb);border-color:#aeb9f5}
-html[data-theme="light"] body .excel-error{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+/* Auth views. */
+html[data-theme="light"] body .auth-heading > span,html[data-theme="light"] body .auth-heading p,html[data-theme="light"] body .auth-field > span,html[data-theme="light"] body .auth-foot{color:var(--app-muted)!important}
+html[data-theme="light"] body .auth-error{color:var(--app-danger)!important;background:var(--app-danger-soft)!important;border-color:var(--app-danger-border)!important}
+html[data-theme="light"] body .auth-foot a{color:var(--app-primary)!important}
 
-/* Header / category menu / mobile bar */
-html[data-theme="light"] body .category-menu{background:#fff;border-color:#dbe3ee;box-shadow:0 18px 45px rgba(56,75,105,.16)}
-html[data-theme="light"] body .category-item{color:#475569}
-html[data-theme="light"] body .category-item:hover{background:#f4f7fb;color:#172033}
-html[data-theme="light"] body .new-table-btn{color:#3730a3;background:#e9edff;border-color:#c7d2fe}
-html[data-theme="light"] body .new-table-btn:hover{background:#dfe5ff}
+/* Excel transfer modal. */
+html[data-theme="light"] body .excel-modal{background:var(--app-surface-strong)!important;color:var(--app-text)!important;border-color:var(--app-border-strong)!important}
+html[data-theme="light"] body .field-card,html[data-theme="light"] body .preview-card{background:var(--app-control-soft)!important;border-color:var(--app-border)!important;color:var(--app-text)!important}
+html[data-theme="light"] body .excel-input,html[data-theme="light"] body .file-drop{background:var(--app-input-bg)!important;color:var(--app-text)!important;border-color:var(--app-border)!important}
+html[data-theme="light"] body .preview-scroll{background:transparent!important}
+html[data-theme="light"] body .preview-table th{background:var(--table-head-bg)!important;color:var(--table-head-text)!important}
+html[data-theme="light"] body .preview-table td{background:var(--table-row-bg)!important;color:var(--table-text)!important;border-color:var(--table-border)!important}
+html[data-theme="light"] body .mini-btn{background:var(--app-control)!important;color:var(--app-text-soft)!important;border-color:var(--app-border)!important}
+
+
+/* Resize/context menu UX. */
+.table-page .data-column-head { position: relative; }
+html[data-theme="dark"] body .table-page .column-resizer,
+html[data-theme="light"] body .table-page .column-resizer { background: transparent; }
+html[data-theme="dark"] body .table-page .column-resizer:hover,
+html[data-theme="light"] body .table-page .column-resizer:hover { background: color-mix(in srgb, var(--app-primary) 70%, transparent) !important; }
+html[data-theme="dark"] body .column-context-menu,
+html[data-theme="light"] body .column-context-menu { background: var(--app-menu) !important; color: var(--app-text) !important; border-color: var(--app-border-strong) !important; box-shadow: var(--app-shadow-strong) !important; }
+html[data-theme="dark"] body .column-menu-title,
+html[data-theme="light"] body .column-menu-title { border-color: var(--app-border) !important; }
+html[data-theme="dark"] body .column-menu-item:hover,
+html[data-theme="light"] body .column-menu-item:hover { background: var(--app-control-hover) !important; }
+html[data-theme="dark"] body .column-menu-item .menu-icon,
+html[data-theme="light"] body .column-menu-item .menu-icon { background: var(--app-control-soft) !important; color: var(--app-primary) !important; }
+html[data-theme="dark"] body .column-menu-separator,
+html[data-theme="light"] body .column-menu-separator { background: var(--app-border) !important; }
+html[data-theme="dark"] body .table-page .empty-icon,
+html[data-theme="light"] body .table-page .empty-icon { background: var(--app-control) !important; border-color: var(--app-border) !important; color: var(--app-muted) !important; }
+html[data-theme="dark"] body .table-page .empty-title,
+html[data-theme="light"] body .table-page .empty-title { color: var(--app-text) !important; }
+html[data-theme="dark"] body .table-page .empty-help,
+html[data-theme="light"] body .table-page .empty-help { color: var(--app-muted) !important; }
+html[data-theme="dark"] body .table-page .sort-indicator,
+html[data-theme="light"] body .table-page .sort-indicator { color: var(--app-primary) !important; }
+html[data-theme="dark"] body .table-page .cell-text-wrap,
+html[data-theme="light"] body .table-page .cell-text-wrap { color: var(--table-text) !important; }
+html[data-theme="dark"] body .table-page .row-delete,
+html[data-theme="light"] body .table-page .row-delete { color: var(--app-danger) !important; }
+html[data-theme="dark"] body .table-page .row-delete:hover,
+html[data-theme="light"] body .table-page .row-delete:hover { background: var(--app-danger-soft) !important; color: var(--app-danger) !important; }
+
+/* Remove accidental zebra strips from any legacy table selectors. */
+html[data-theme="dark"] body .table-page .data-table tbody tr:nth-child(even),
+html[data-theme="light"] body .table-page .data-table tbody tr:nth-child(even) { background: var(--table-row-bg) !important; }
+
+/* Shared form/auth surfaces: both themes use the same tokens. */
+html[data-theme="dark"] body .create-form .field > span,
+html[data-theme="light"] body .create-form .field > span { color: var(--app-text-soft) !important; }
+html[data-theme="dark"] body .create-form .field b,
+html[data-theme="light"] body .create-form .field b { color: var(--app-danger) !important; }
+html[data-theme="dark"] body .create-form .field small,
+html[data-theme="light"] body .create-form .field small { color: var(--app-muted) !important; }
+html[data-theme="dark"] body .create-form .add-column,
+html[data-theme="light"] body .create-form .add-column { color: var(--app-primary-text) !important; background: var(--app-primary-soft) !important; border-color: var(--app-accent-border) !important; }
+html[data-theme="dark"] body .create-form .add-column:hover,
+html[data-theme="light"] body .create-form .add-column:hover { background: var(--app-primary-soft-strong) !important; }
+html[data-theme="dark"] body .create-form .columns-empty,
+html[data-theme="light"] body .create-form .columns-empty { color: var(--app-muted) !important; background: var(--app-control-soft) !important; border-color: var(--app-border) !important; }
+html[data-theme="dark"] body .create-form .columns-empty strong,
+html[data-theme="light"] body .create-form .columns-empty strong { color: var(--app-text-soft) !important; }
+html[data-theme="dark"] body .create-form .columns-empty-icon,
+html[data-theme="light"] body .create-form .columns-empty-icon { background: var(--app-accent-soft) !important; color: var(--app-primary) !important; }
+html[data-theme="dark"] body .create-form .column-switches label,
+html[data-theme="light"] body .create-form .column-switches label { color: var(--app-muted) !important; }
+html[data-theme="dark"] body .create-form .remove-column,
+html[data-theme="light"] body .create-form .remove-column { color: var(--app-muted) !important; background: var(--app-control) !important; border-color: var(--app-border) !important; }
+html[data-theme="dark"] body .create-form .remove-column:hover,
+html[data-theme="light"] body .create-form .remove-column:hover { color: var(--app-danger) !important; background: var(--app-danger-soft) !important; }
+html[data-theme="dark"] body .create-form .create-footer,
+html[data-theme="light"] body .create-form .create-footer { color: var(--app-muted) !important; border-color: var(--app-border) !important; }
+html[data-theme="dark"] body .create-form .footer-count,
+html[data-theme="light"] body .create-form .footer-count { background: var(--app-primary-soft) !important; color: var(--app-primary-text) !important; }
+
+html[data-theme="dark"] body .auth-heading > span,
+html[data-theme="light"] body .auth-heading > span,
+html[data-theme="dark"] body .auth-heading p,
+html[data-theme="light"] body .auth-heading p,
+html[data-theme="dark"] body .auth-field > span,
+html[data-theme="light"] body .auth-field > span,
+html[data-theme="dark"] body .auth-foot,
+html[data-theme="light"] body .auth-foot { color: var(--app-muted) !important; }
+html[data-theme="dark"] body .auth-submit,
+html[data-theme="light"] body .auth-submit { background: linear-gradient(135deg,var(--app-primary),var(--app-primary-2)) !important; border-color: var(--app-primary-border) !important; color:#fff !important; box-shadow:0 12px 35px var(--app-primary-shadow) !important; }
+html[data-theme="dark"] body .auth-error,
+html[data-theme="light"] body .auth-error { color: var(--app-danger) !important; background: var(--app-danger-soft) !important; border-color: var(--app-danger-border) !important; }
+html[data-theme="dark"] body .auth-error span,
+html[data-theme="light"] body .auth-error span { background: var(--app-danger-soft) !important; color: var(--app-danger) !important; }
+html[data-theme="dark"] body .auth-foot a,
+html[data-theme="light"] body .auth-foot a { color: var(--app-primary) !important; }
+
+/* Excel modal: Teleported to body, therefore override the component's scoped dark shell safely. */
+html[data-theme="dark"] body .excel-backdrop,
+html[data-theme="light"] body .excel-backdrop { background: color-mix(in srgb,var(--app-bg) 74%,transparent) !important; }
+html[data-theme="dark"] body .excel-modal,
+html[data-theme="light"] body .excel-modal { background: var(--app-surface-strong) !important; border-color: var(--app-border-strong) !important; color: var(--app-text) !important; box-shadow: var(--app-shadow-strong) !important; }
+html[data-theme="dark"] body .excel-header,
+html[data-theme="light"] body .excel-header,
+html[data-theme="dark"] body .excel-tabs,
+html[data-theme="light"] body .excel-tabs { border-color: var(--app-border) !important; }
+html[data-theme="dark"] body .excel-header h2,
+html[data-theme="light"] body .excel-header h2 { color: var(--app-text) !important; }
+html[data-theme="dark"] body .excel-header p,
+html[data-theme="light"] body .excel-header p,
+html[data-theme="dark"] body .excel-eyebrow,
+html[data-theme="light"] body .excel-eyebrow,
+html[data-theme="dark"] body .field-help,
+html[data-theme="light"] body .field-help,
+html[data-theme="dark"] body .file-copy span,
+html[data-theme="light"] body .file-copy span { color: var(--app-muted) !important; }
+html[data-theme="dark"] body .excel-close,
+html[data-theme="light"] body .excel-close,
+html[data-theme="dark"] body .excel-tabs button,
+html[data-theme="light"] body .excel-tabs button,
+html[data-theme="dark"] body .mini-btn,
+html[data-theme="light"] body .mini-btn { background: var(--app-control) !important; color: var(--app-text-soft) !important; border-color: var(--app-border) !important; }
+html[data-theme="dark"] body .excel-tabs button:hover,
+html[data-theme="light"] body .excel-tabs button:hover { background: var(--app-control-hover) !important; color: var(--app-text) !important; }
+html[data-theme="dark"] body .excel-tabs button.active,
+html[data-theme="light"] body .excel-tabs button.active { background: var(--app-primary-soft) !important; color: var(--app-primary-text) !important; border-color: var(--app-primary-border) !important; }
+html[data-theme="dark"] body .field-card,
+html[data-theme="light"] body .field-card,
+html[data-theme="dark"] body .preview-card,
+html[data-theme="light"] body .preview-card { background: var(--app-control-soft) !important; border-color: var(--app-border) !important; color: var(--app-text) !important; }
+html[data-theme="dark"] body .field-card>label,
+html[data-theme="light"] body .field-card>label { color: var(--app-text-soft) !important; }
+html[data-theme="dark"] body .excel-input,
+html[data-theme="light"] body .excel-input,
+html[data-theme="dark"] body .file-drop,
+html[data-theme="light"] body .file-drop { background: var(--app-input-bg) !important; color: var(--app-text) !important; border-color: var(--app-border) !important; }
+html[data-theme="dark"] body .file-drop.selected,
+html[data-theme="light"] body .file-drop.selected { background: var(--app-primary-soft) !important; border-color: var(--app-primary-border) !important; }
+html[data-theme="dark"] body .file-icon,
+html[data-theme="light"] body .file-icon { background: var(--app-accent-soft) !important; color: var(--app-primary) !important; }
+html[data-theme="dark"] body .file-copy strong,
+html[data-theme="light"] body .file-copy strong { color: var(--app-text-soft) !important; }
+html[data-theme="dark"] body .preview-table th,
+html[data-theme="light"] body .preview-table th { background: var(--table-head-bg) !important; color: var(--table-head-text) !important; border-color: var(--table-border) !important; }
+html[data-theme="dark"] body .preview-table td,
+html[data-theme="light"] body .preview-table td { background: var(--table-row-bg) !important; color: var(--table-text) !important; border-color: var(--table-border) !important; }

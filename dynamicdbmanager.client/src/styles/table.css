@@ -1,6 +1,5 @@
-/* DynamicDbManager — unified Table Workspace UI */
-.table-page { color: var(--app-text); }
-
+/* DynamicDbManager — stable table workspace layer. */
+.table-page { color: var(--app-text); min-width: 0; }
 .table-page .tabs-panel,
 .table-page .toolbar,
 .table-page .data-panel {
@@ -9,282 +8,75 @@
   box-shadow: var(--app-shadow), inset 0 1px 0 var(--app-highlight);
 }
 .table-page .tabs-scroll,
-.table-page .table-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scroll-thumb) transparent;
-}
+.table-page .table-scroll { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; }
 .table-page .tabs-scroll::-webkit-scrollbar,
 .table-page .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
 .table-page .tabs-scroll::-webkit-scrollbar-track,
 .table-page .table-scroll::-webkit-scrollbar-track { background: transparent; }
 .table-page .tabs-scroll::-webkit-scrollbar-thumb,
 .table-page .table-scroll::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 999px; }
+
 .table-page .tab,
 .table-page .toolbar-btn,
-.table-page .tab-arrow {
-  background: var(--app-control);
-  color: var(--app-text-soft);
-  border: 1px solid var(--app-border);
-}
+.table-page .tab-arrow { background: var(--app-control); color: var(--app-text-soft); border: 1px solid var(--app-border); }
 .table-page .tab:hover,
 .table-page .toolbar-btn:hover,
-.table-page .tab-arrow:hover {
-  background: var(--app-control-hover);
-  color: var(--app-text);
-  border-color: var(--app-border-strong);
-}
+.table-page .tab-arrow:hover { background: var(--app-control-hover); color: var(--app-text); border-color: var(--app-border-strong); }
 .table-page .tab.active,
-.table-page .toolbar-btn.primary {
-  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2));
-  color: #fff;
-  border-color: var(--app-primary-border);
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--app-primary) 18%, transparent);
-}
-.table-page .toolbar-btn.danger {
-  background: var(--app-danger-soft);
-  color: var(--app-danger);
-  border-color: var(--app-danger-border);
-}
-.table-page .toolbar-btn.excel {
-  background: var(--app-success-soft);
-  color: var(--app-success);
-  border-color: var(--app-success-border);
-}
-.table-page .search-box input {
-  background: var(--app-input-bg);
-  color: var(--app-text);
-  border-color: var(--app-border);
-}
-.table-page .search-box input::placeholder { color: var(--app-muted); }
-.table-page .search-box input:focus {
-  border-color: var(--app-primary-border);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary) 10%, transparent);
-  outline: none;
-}
-.table-page .data-table {
-  color: var(--table-text);
-  background: var(--table-bg);
-  border-collapse: separate;
-  border-spacing: 0;
-}
-.table-page .data-table thead th {
-  background: var(--table-head-bg);
-  color: var(--table-head-text);
-  border-bottom: 1px solid var(--table-border);
-}
-.table-page .data-table thead th button {
-  color: inherit;
-  background: transparent;
-}
-.table-page .data-table tbody tr { background: var(--table-row-bg); }
-.table-page .data-table tbody td {
-  color: var(--table-text);
-  border-bottom: 1px solid var(--table-border);
-  background: transparent;
-}
-.table-page .data-table tbody tr:hover td { background: var(--table-row-hover); }
-.table-page .data-table tbody tr.selected td { background: var(--table-row-selected); }
-.table-page .actions-col {
-  background: var(--table-actions-bg);
-}
+.table-page .toolbar-btn.primary { background: linear-gradient(135deg,var(--app-primary),var(--app-primary-2)); color:#fff; border-color:var(--app-primary-border); box-shadow:0 8px 20px color-mix(in srgb,var(--app-primary) 18%,transparent); }
+.table-page .toolbar-btn.danger { background:var(--app-danger-soft); color:var(--app-danger); border-color:var(--app-danger-border); }
+.table-page .toolbar-btn.excel { background:var(--app-success-soft); color:var(--app-success); border-color:var(--app-success-border); }
+.table-page .search-box input { background:var(--app-input-bg); color:var(--app-text); border-color:var(--app-border); }
+.table-page .search-box input::placeholder { color:var(--app-muted); }
 
-.table-page .row-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px;
-  border: 1px solid var(--app-border);
-  border-radius: 10px;
-  background: var(--app-control-soft);
-}
-.table-page .row-action {
-  width: 32px;
-  min-width: 32px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0 7px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--app-text-soft);
-  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
-}
-.table-page .row-action:hover {
-  background: var(--app-control-hover);
-  color: var(--app-text);
-  border-color: var(--app-border);
-  transform: translateY(-1px);
-}
-.table-page .row-action.danger:hover {
-  background: var(--app-danger-soft);
-  color: var(--app-danger);
-  border-color: var(--app-danger-border);
-}
-.table-page .statusbar {
-  background: var(--table-footer-bg);
-  color: var(--table-footer-text);
-  border-top: 1px solid var(--table-footer-border);
-}
-.table-page .statusbar .page-btn,
-.table-page .statusbar .page-size select {
-  background: var(--app-control);
-  color: var(--app-text-soft);
-  border: 1px solid var(--app-border);
-}
-.table-page .statusbar .page-btn:hover:not(:disabled) {
-  background: var(--app-control-hover);
-  color: var(--app-text);
-}
-.table-page .statusbar .page-btn.active {
-  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2));
-  color: #fff;
-  border-color: var(--app-primary-border);
-}
-.table-page .modal-card {
-  background: var(--app-surface-strong);
-  color: var(--app-text);
-  border-color: var(--app-border-strong);
-}
-.table-page .modal-header h2,
-.table-page .field label,
-.table-page .form-section h3 { color: var(--app-text); }
-.table-page .modal-header p,
-.table-page .field small { color: var(--app-muted); }
-.table-page .modal-card input,
-.table-page .modal-card select,
-.table-page .modal-card textarea {
-  background: var(--app-input-bg);
-  color: var(--app-text);
-  border-color: var(--app-border);
-}
-.table-page .modal-card input:focus,
-.table-page .modal-card select:focus,
-.table-page .modal-card textarea:focus {
-  border-color: var(--app-primary-border);
-  outline: none;
-}
-
-/* Compact mobile actions */
-@media (max-width: 640px) {
-  .table-page .row-actions { gap: 2px; padding: 2px; }
-  .table-page .row-action { width: 29px; min-width: 29px; height: 27px; padding: 0; }
-  .table-page .row-action span { display: none; }
-}
-
-/*
- * Stable table sizing fix
- * Keep this block last: it intentionally wins over legacy/older actions-column rules.
- * It does not change theme variables, modal styles, scrollbar design, or row-action behavior.
- */
-.table-page .data-table {
-  width: 100% !important;
-  min-width: max-content;
-  table-layout: auto;
-}
-
-.table-page .data-table .actions-col {
-  width: 42px !important;
-  min-width: 42px !important;
-  max-width: 42px !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  position: sticky;
-  right: 0;
-  z-index: 8;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-  box-sizing: border-box;
-  background: var(--table-actions-bg);
-  border-right: 0;
-  box-shadow: -8px 0 16px color-mix(in srgb, var(--app-text) 10%, transparent);
-}
-
-.table-page .data-table thead .actions-col {
-  z-index: 10;
-  background: var(--table-head-bg);
-}
-
-.table-page .data-table .actions-col .row-actions {
-  width: 100%;
-  min-width: 0;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
-
-.table-page .data-table .actions-col .row-action {
-  width: 28px;
-  min-width: 28px;
-  max-width: 28px;
-  height: 28px;
-  padding: 0;
-}
-
-.table-page .data-table .actions-col .row-action span {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .table-page .data-table .actions-col {
-    width: 42px !important;
-    min-width: 42px !important;
-    max-width: 42px !important;
-  }
-}
-
-/* =========================================================
-   DynamicDbManager — uniform table rows
-   ========================================================= */
+.table-page .data-panel { min-height:0; overflow:hidden; }
+.table-page .table-scroll { flex:1; min-height:0; overflow:auto; background:transparent; }
+.table-page .data-table { color:var(--table-text); background:transparent; border-collapse:separate; border-spacing:0; width:max-content; min-width:100%; font-size:12px; }
+.table-page .data-table thead th { background:var(--table-head-bg); color:var(--table-head-text); border-color:var(--table-border); }
 .table-page .data-table tbody tr,
 .table-page .data-table tbody tr:nth-child(odd),
-.table-page .data-table tbody tr:nth-child(even) {
-    background: var(--table-row-bg) !important;
-}
+.table-page .data-table tbody tr:nth-child(even) { background:var(--table-row-bg); }
+.table-page .data-table tbody td { color:var(--table-text); background:transparent; border-bottom:1px solid var(--table-border); border-right:1px solid var(--table-border); }
+.table-page .data-table tbody tr:hover td { background:var(--table-row-hover); }
+.table-page .data-table tbody tr.selected td { background:var(--table-row-selected); }
 
-.table-page .data-table tbody tr > td:not(.actions-col) {
-    background: var(--table-row-bg) !important;
+.table-page .actions-col {
+  width:42px !important;
+  min-width:42px !important;
+  max-width:42px !important;
+  padding:0 !important;
+  position:sticky;
+  right:0;
+  z-index:8;
+  text-align:center;
+  vertical-align:middle;
+  box-sizing:border-box;
+  background:var(--table-actions-bg) !important;
+  border-right:0 !important;
+  box-shadow:-8px 0 16px color-mix(in srgb,var(--app-text) 7%,transparent);
 }
+.table-page .data-table thead .actions-col { z-index:10; background:var(--table-head-bg) !important; }
+.table-page .data-table tbody tr:hover .actions-col { background:var(--table-row-hover) !important; }
+.table-page .data-table tbody tr.selected .actions-col { background:var(--table-row-selected) !important; }
+.table-page .row-delete { width:28px; min-width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:0; border-radius:8px; background:transparent; color:var(--app-danger); font-size:20px; line-height:1; cursor:pointer; transition:background .16s ease,color .16s ease,transform .16s ease; }
+.table-page .row-delete:hover { background:var(--app-danger-soft); color:var(--app-danger); transform:scale(1.03); }
 
-.table-page .data-table tbody tr:hover,
-.table-page .data-table tbody tr:hover > td:not(.actions-col) {
-    background: var(--table-row-hover) !important;
-}
+.table-page .statusbar { background:var(--table-footer-bg); color:var(--table-footer-text); border-top:1px solid var(--table-footer-border); }
+.table-page .statusbar .page-btn,
+.table-page .statusbar .page-size select { background:var(--app-control); color:var(--app-text-soft); border:1px solid var(--app-border); }
+.table-page .statusbar .page-btn:hover:not(:disabled) { background:var(--app-control-hover); color:var(--app-text); }
+.table-page .statusbar .page-btn.active { background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2)); color:#fff; border-color:var(--app-primary-border); }
 
-.table-page .data-table tbody tr.selected,
-.table-page .data-table tbody tr.selected > td:not(.actions-col) {
-    background: var(--table-row-selected) !important;
-}
-
-.table-page .data-table tbody td.actions-col {
-    background: var(--table-actions-bg) !important;
-}
-
-.table-page .data-table tbody tr:hover td.actions-col {
-    background: var(--table-row-hover) !important;
-}
-
-.table-page .data-table tbody tr.selected td.actions-col {
-    background: var(--table-row-selected) !important;
-}
-
-/* =========================================================
-   Empty table area — inherit workspace theme
-   Keep header and data-row backgrounds unchanged; only the
-   unused space below the last row should reveal the panel theme.
-   ========================================================= */
-.table-page .table-scroll {
-  background: transparent !important;
-}
-
-.table-page .data-table {
-  background: transparent !important;
-}
-
-.table-page .data-table tbody {
-  background: transparent !important;
-}
+/* Shared modal shell. Teleported modals use body-scoped compatibility rules too. */
+.table-page .modal-card { background:var(--app-surface-strong); color:var(--app-text); border-color:var(--app-border-strong); }
+.table-page .modal-header h2,
+.table-page .field label,
+.table-page .form-section h3 { color:var(--app-text); }
+.table-page .modal-header p,
+.table-page .field small { color:var(--app-muted); }
+.table-page .modal-card input,
+.table-page .modal-card select,
+.table-page .modal-card textarea { background:var(--app-input-bg); color:var(--app-text); border-color:var(--app-border); }
+.table-page .modal-card input:focus,
+.table-page .modal-card select:focus,
+.table-page .modal-card textarea:focus { border-color:var(--app-primary-border); outline:none; }

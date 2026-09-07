@@ -5,13 +5,11 @@ import router from './router'
 import { useThemeStore } from './stores/theme'
 import './style.css'
 
-const app = createApp(App)
 const pinia = createPinia()
+const app = createApp(App)
+
+useThemeStore(pinia).init()
 
 app.use(pinia)
 app.use(router)
-
-// Apply the saved theme before the first render to avoid a visible flash.
-useThemeStore(pinia).init()
-
 app.mount('#app')
