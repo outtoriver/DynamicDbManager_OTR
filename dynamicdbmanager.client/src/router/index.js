@@ -4,12 +4,14 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import AdminUsersView from '../views/AdminUsersView.vue'
 import TableDataView from '../views/TableDataView.vue'
+import HelpView from '../views/HelpView.vue'
 import ForbiddenView from '../views/ForbiddenView.vue'
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView, meta: { requiresAuth: true } },
   { path: '/table/:id', name: 'tableData', component: TableDataView, meta: { requiresAuth: true } },
+  { path: '/help', name: 'help', component: HelpView, meta: { requiresAuth: true } },
   { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
   { path: '/register', name: 'register', component: RegisterView, meta: { guest: true } },
   { path: '/admin/users', name: 'adminUsers', component: AdminUsersView, meta: { requiresAuth: true, requiresAdmin: true } },
