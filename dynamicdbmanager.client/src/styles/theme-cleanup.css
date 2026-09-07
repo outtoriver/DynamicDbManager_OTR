@@ -1,0 +1,313 @@
+/*
+ * DynamicDbManager — centralized UI theme cleanup
+ * Loaded after legacy/modern component CSS so Day/Night tokens win.
+ */
+
+:root,
+html[data-theme="dark"] {
+  --ui-text-strong: var(--app-text);
+  --ui-text: var(--app-text-soft);
+  --ui-text-muted: var(--app-muted);
+  --ui-control-bg: var(--app-control);
+  --ui-control-hover: var(--app-control-hover);
+  --ui-surface: var(--app-surface);
+  --ui-border: var(--app-border);
+  --ui-accent: var(--app-primary);
+  --ui-accent-soft: var(--app-active);
+  --ui-accent-border: var(--app-accent-border);
+  --ui-success-text: #74e1ba;
+  --ui-success-bg: rgba(16,185,129,.10);
+  --ui-success-border: rgba(74,222,128,.18);
+  --ui-danger-text: #ff92aa;
+  --ui-danger-bg: rgba(255,101,132,.08);
+  --ui-danger-border: rgba(255,101,132,.18);
+}
+
+html[data-theme="light"] {
+  --ui-text-strong: #172033;
+  --ui-text: #334155;
+  --ui-text-muted: #64748b;
+  --ui-control-bg: #ffffff;
+  --ui-control-hover: #f4f7fb;
+  --ui-surface: #ffffff;
+  --ui-border: #dbe3ee;
+  --ui-accent: #4f46e5;
+  --ui-accent-soft: #eef2ff;
+  --ui-accent-border: #c7d2fe;
+  --ui-success-text: #087f5b;
+  --ui-success-bg: #effaf5;
+  --ui-success-border: #b7ead7;
+  --ui-danger-text: #b4234b;
+  --ui-danger-bg: #fff1f4;
+  --ui-danger-border: #f4bac7;
+}
+
+/* ============================================================
+   HOME / TABLE CATALOG — remove dark-only hard-coded colors
+   ============================================================ */
+
+.home-page .eyebrow {
+  color: var(--ui-text-muted) !important;
+}
+
+.home-page .eyebrow-dot {
+  background: var(--ui-accent) !important;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ui-accent) 55%, transparent) !important;
+}
+
+.home-page .hero-button {
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+  color: var(--ui-text) !important;
+}
+
+.home-page .hero-button:hover {
+  background: var(--ui-control-hover) !important;
+  border-color: var(--ui-accent-border) !important;
+  color: var(--ui-text-strong) !important;
+}
+
+.home-page .hero-button.primary {
+  color: #fff !important;
+  border-color: color-mix(in srgb, var(--ui-accent) 30%, transparent) !important;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2)) !important;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--app-primary) 18%, transparent) !important;
+}
+
+.home-page .hero-button.excel {
+  color: var(--ui-success-text) !important;
+  border-color: var(--ui-success-border) !important;
+  background: var(--ui-success-bg) !important;
+}
+
+.home-page .hero-button.excel:hover {
+  background: color-mix(in srgb, var(--ui-success-bg) 78%, var(--ui-success-text) 10%) !important;
+}
+
+.home-page .stat-card small {
+  color: var(--ui-text-muted) !important;
+}
+
+.home-page .stat-icon.indigo {
+  color: var(--app-primary) !important;
+  background: var(--app-primary-soft) !important;
+  border-color: var(--ui-accent-border) !important;
+}
+
+.home-page .stat-icon.cyan {
+  color: var(--app-cyan) !important;
+  background: color-mix(in srgb, var(--app-cyan) 10%, transparent) !important;
+}
+
+.home-page .stat-icon.emerald {
+  color: var(--ui-success-text) !important;
+  background: var(--ui-success-bg) !important;
+}
+
+.home-page .stat-icon.violet {
+  color: var(--app-primary-2) !important;
+  background: color-mix(in srgb, var(--app-primary-2) 10%, transparent) !important;
+}
+
+.home-page .section-heading p {
+  color: var(--ui-text-muted) !important;
+}
+
+.home-page .circle-btn {
+  color: var(--ui-text-muted) !important;
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+.home-page .circle-btn:hover {
+  color: var(--ui-text-strong) !important;
+  background: var(--ui-control-hover) !important;
+  border-color: var(--ui-accent-border) !important;
+}
+
+.home-page .search-box {
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+.home-page .search-box svg {
+  color: var(--ui-text-muted) !important;
+}
+
+.home-page .search-box input {
+  color: var(--ui-text-strong) !important;
+}
+
+.home-page .search-box input::placeholder {
+  color: color-mix(in srgb, var(--ui-text-muted) 80%, transparent) !important;
+}
+
+.home-page .search-box button,
+.home-page .result-count {
+  color: var(--ui-text-muted) !important;
+}
+
+.home-page .create-section :deep(.glass-card) {
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+/* ============================================================
+   TABLE LIST CARDS — explicit Day/Night palette
+   ============================================================ */
+
+.table-grid .table-card {
+  background: var(--ui-surface) !important;
+  border-color: var(--ui-border) !important;
+  box-shadow: var(--app-shadow) !important;
+}
+
+.table-grid .table-card:hover {
+  background: var(--ui-control-hover) !important;
+  border-color: var(--ui-accent-border) !important;
+}
+
+.table-grid .table-main h3 {
+  color: var(--ui-text-strong) !important;
+}
+
+.table-grid .table-main p {
+  color: var(--ui-text-muted) !important;
+}
+
+.table-grid .table-main p span {
+  color: color-mix(in srgb, var(--ui-text-muted) 76%, transparent) !important;
+}
+
+.table-grid .table-icon {
+  color: var(--ui-accent) !important;
+  background: var(--ui-accent-soft) !important;
+  border-color: var(--ui-accent-border) !important;
+}
+
+.table-grid .meta-chip {
+  color: var(--ui-text-muted) !important;
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+.table-grid .meta-dot {
+  background: var(--ui-accent) !important;
+}
+
+.table-grid .date-text {
+  color: var(--ui-text-muted) !important;
+}
+
+.table-grid .open-btn {
+  color: var(--ui-text) !important;
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+.table-grid .open-btn:hover {
+  color: var(--ui-text-strong) !important;
+  background: var(--ui-accent-soft) !important;
+  border-color: var(--ui-accent-border) !important;
+}
+
+.table-grid .icon-action {
+  color: var(--ui-text-muted) !important;
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+.table-grid .icon-action:hover {
+  color: var(--ui-text-strong) !important;
+  background: var(--ui-control-hover) !important;
+  border-color: var(--ui-accent-border) !important;
+}
+
+.table-grid .icon-action.success {
+  color: var(--ui-success-text) !important;
+  background: var(--ui-success-bg) !important;
+  border-color: var(--ui-success-border) !important;
+}
+
+.table-grid .icon-action.danger {
+  color: var(--ui-danger-text) !important;
+  background: var(--ui-danger-bg) !important;
+  border-color: var(--ui-danger-border) !important;
+}
+
+.table-grid .edit-icon {
+  color: var(--ui-accent) !important;
+  background: var(--ui-accent-soft) !important;
+}
+
+.table-grid .empty-state,
+.table-grid .empty-state p {
+  color: var(--ui-text-muted) !important;
+}
+
+.table-grid .empty-state h3 {
+  color: var(--ui-text-strong) !important;
+}
+
+.table-grid .empty-icon {
+  color: var(--ui-accent) !important;
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+/* ============================================================
+   COMMON FORM / SELECT / BUTTON COMPATIBILITY
+   ============================================================ */
+
+html[data-theme="light"] .home-page input,
+html[data-theme="light"] .home-page select,
+html[data-theme="light"] .home-page textarea {
+  color: var(--ui-text-strong) !important;
+  background: var(--ui-control-bg) !important;
+  border-color: var(--ui-border) !important;
+}
+
+html[data-theme="light"] .home-page input::placeholder,
+html[data-theme="light"] .home-page textarea::placeholder {
+  color: var(--ui-text-muted) !important;
+}
+
+html[data-theme="light"] .home-page button:not(.primary):not(.excel) {
+  -webkit-text-fill-color: var(--ui-text) !important;
+}
+
+html[data-theme="dark"] .home-page button,
+html[data-theme="dark"] .home-page input,
+html[data-theme="dark"] .home-page select,
+html[data-theme="dark"] .home-page textarea {
+  color-scheme: dark;
+}
+
+/* ============================================================
+   SELECTION / SCROLLBARS
+   ============================================================ */
+
+.home-page,
+.table-grid {
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+
+.home-page::-webkit-scrollbar,
+.table-grid::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.home-page::-webkit-scrollbar-thumb,
+.table-grid::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+}
+
+html[data-theme="dark"] {
+  --scroll-thumb: rgba(255,255,255,.18);
+}
+
+html[data-theme="light"] {
+  --scroll-thumb: #c4cfdd;
+}

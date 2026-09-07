@@ -1,5 +1,0 @@
-/* Additional visual polish for the integrated Access workspace. */
-.access-page .permission-toolbar { display:grid; gap:12px; }
-.access-page .permission-toolbar > .search-field { max-width:none; }
-.access-page .permissions-tab { padding-top: 2px; }
-.access-page .permission-user-picker { margin-top: 0; }
