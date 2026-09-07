@@ -3,299 +3,153 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
 
 const container = ref(null)
+let scene
+let camera
+let renderer
+let particles
+let geometry
+let material
+let animationId
+let resizeObserver
+let themeListener
+let visibilityListener
+let running = true
+let lastFrame = 0
+let frameMs = 33
 
-let scene = null
-let camera = null
-let renderer = null
-let particles = null
-let geometry = null
-let material = null
+const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
-let animationId = null
-let isActive = true
-let isDestroyed = false
-let lastFrameTime = 0
-
-let handleResize = null
-let handleVisibilityChange = null
-let handleThemeChange = null
-let currentProfile = null
-
-const reducedMotion =
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-
-function getProfile() {
-  const width = window.innerWidth
-  const threads = navigator.hardwareConcurrency || 4
-  const memory = navigator.deviceMemory || 4
-
-  let count = 2000
-
-  if (width <= 768) {
-    count = 700
-  } else if (threads <= 4 || memory <= 4) {
-    count = 1100
-  } else if (threads <= 8) {
-    count = 1600
-  }
-
-  if (reducedMotion) {
-    count = Math.min(count, 450)
-  }
-
-  const dpr = Math.min(
-    window.devicePixelRatio || 1,
-    width <= 768 ? 1.25 : 1.5
-  )
-
-  const fps = reducedMotion ? 20 : width <= 768 ? 30 : 45
-
-  return { count, dpr, fps }
+function themeIsLight() {
+  return document.documentElement.dataset.theme === 'light'
 }
 
-function createParticles(count, theme = document.documentElement.dataset.theme || 'dark') {
-  const positions = new Float32Array(count * 3)
+function createMaterial() {
+  const count = geometry?.attributes?.position?.count || 0
   const colors = new Float32Array(count * 3)
+  const palette = themeIsLight()
+    ? [
+        new THREE.Color('#2563eb'),
+        new THREE.Color('#0891b2'),
+        new THREE.Color('#6366f1'),
+        new THREE.Color('#475569')
+      ]
+    : [
+        new THREE.Color('#67e8f9'),
+        new THREE.Color('#a78bfa'),
+        new THREE.Color('#60a5fa'),
+        new THREE.Color('#ffffff')
+      ]
 
-  const colorBase = new THREE.Color(theme === 'light' ? 0x4f46e5 : 0x88aaff)
-  const colorCyan = new THREE.Color(theme === 'light' ? 0x0891b2 : 0x67e8f9)
-  const tempColor = new THREE.Color()
-
-  for (let i = 0; i < count; i++) {
-    const i3 = i * 3
-
-    positions[i3] = (Math.random() - 0.5) * 100
-    positions[i3 + 1] = (Math.random() - 0.5) * 100
-    positions[i3 + 2] = (Math.random() - 0.5) * 100
-
-    tempColor.copy(colorBase).lerp(colorCyan, Math.random() * 0.35)
-
-    const brightness = 0.55 + Math.random() * 0.45
-    colors[i3] = tempColor.r * brightness
-    colors[i3 + 1] = tempColor.g * brightness
-    colors[i3 + 2] = tempColor.b * brightness
+  for (let i = 0; i < count; i += 1) {
+    const color = palette[i % palette.length]
+    colors[i * 3] = color.r
+    colors[i * 3 + 1] = color.g
+    colors[i * 3 + 2] = color.b
   }
 
-  geometry = new THREE.BufferGeometry()
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
 
-  material = new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: window.innerWidth <= 768 ? 0.16 : 0.2,
+  return new THREE.PointsMaterial({
+    size: themeIsLight() ? 0.035 : 0.045,
     transparent: true,
-    opacity: theme === 'light' ? 0.56 : 0.78,
-    depthWrite: false,
-    depthTest: true,
+    opacity: themeIsLight() ? 0.34 : 0.52,
     vertexColors: true,
-    sizeAttenuation: true,
-    blending: theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
   })
+}
 
+function buildScene() {
+  if (!container.value) return
+
+  scene = new THREE.Scene()
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100)
+  camera.position.z = 10
+
+  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'high-performance' })
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth <= 768 ? 1.2 : 1.5))
+  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setClearColor(0x000000, 0)
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+  container.value.appendChild(renderer.domElement)
+
+  const count = reducedMotion ? 450 : window.innerWidth <= 768 ? 700 : 1400
+  geometry = new THREE.BufferGeometry()
+  const positions = new Float32Array(count * 3)
+
+  for (let i = 0; i < count; i += 1) {
+    positions[i * 3] = (Math.random() - 0.5) * 22
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 14
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 12
+  }
+
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  material = createMaterial()
   particles = new THREE.Points(geometry, material)
   scene.add(particles)
 }
 
-function renderFrame(now) {
-  if (isDestroyed || !isActive || !renderer || !scene || !camera || !particles) {
-    return
-  }
+function handleResize() {
+  if (!camera || !renderer) return
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth <= 768 ? 1.2 : 1.5))
+  renderer.setSize(window.innerWidth, window.innerHeight)
+}
 
-  const fps = window.innerWidth <= 768 ? 30 : 45
-  const frameInterval = 1000 / (reducedMotion ? 20 : fps)
+function handleThemeChange() {
+  if (!geometry || !particles) return
+  material?.dispose()
+  material = createMaterial()
+  particles.material = material
+}
 
-  if (now - lastFrameTime < frameInterval) {
-    animationId = requestAnimationFrame(renderFrame)
-    return
-  }
+function animate(now) {
+  if (!running || !renderer || !scene || !camera) return
+  animationId = requestAnimationFrame(animate)
 
-  const delta = Math.min(now - lastFrameTime, 100) / 16.6667
-  lastFrameTime = now
+  if (now - lastFrame < frameMs) return
+  lastFrame = now
 
-  if (!reducedMotion) {
-    particles.rotation.y += 0.0005 * delta
-    particles.rotation.x += 0.0002 * delta
+  if (!reducedMotion && particles) {
+    particles.rotation.y += 0.00035
+    particles.rotation.x += 0.00008
   }
 
   renderer.render(scene, camera)
-  animationId = requestAnimationFrame(renderFrame)
-}
-
-function startAnimation() {
-  if (animationId || isDestroyed) return
-  lastFrameTime = performance.now()
-  animationId = requestAnimationFrame(renderFrame)
-}
-
-function stopAnimation() {
-  if (!animationId) return
-  cancelAnimationFrame(animationId)
-  animationId = null
 }
 
 onMounted(() => {
-  if (!container.value) return
-
-  try {
-    const profile = getProfile()
-    currentProfile = profile
-    const width = window.innerWidth
-    const height = window.innerHeight
-
-    scene = new THREE.Scene()
-
-    camera = new THREE.PerspectiveCamera(
-      75,
-      width / height,
-      0.1,
-      1000
-    )
-    camera.position.z = 30
-
-    renderer = new THREE.WebGLRenderer({
-      antialias: width > 768,
-      alpha: true,
-      powerPreference: 'high-performance',
-      stencil: false,
-      depth: true
-    })
-
-    renderer.setPixelRatio(profile.dpr)
-    renderer.setSize(width, height, false)
-    renderer.setClearColor(0x000000, 0)
-
-    if ('outputColorSpace' in renderer) {
-      renderer.outputColorSpace = THREE.SRGBColorSpace
-    }
-
-    renderer.domElement.setAttribute('aria-hidden', 'true')
-    container.value.appendChild(renderer.domElement)
-
-    createParticles(profile.count, document.documentElement.dataset.theme || 'dark')
-
-    handleResize = () => {
-      if (!camera || !renderer) return
-
-      const w = window.innerWidth
-      const h = window.innerHeight
-
-      camera.aspect = w / h
-      camera.updateProjectionMatrix()
-
-      renderer.setPixelRatio(
-        Math.min(window.devicePixelRatio || 1, w <= 768 ? 1.25 : 1.5)
-      )
-      renderer.setSize(w, h, false)
-
-      if (material) {
-        material.size = w <= 768 ? 0.16 : 0.2
-        material.needsUpdate = true
-      }
-    }
-
-    handleVisibilityChange = () => {
-      isActive = !document.hidden
-      if (!isActive) stopAnimation()
-      else startAnimation()
-    }
-
-    window.addEventListener('resize', handleResize, { passive: true })
-
-    handleThemeChange = () => {
-      if (!scene || !currentProfile || isDestroyed) return
-      if (particles) {
-        scene.remove(particles)
-        geometry?.dispose()
-        material?.dispose()
-        particles = null
-        geometry = null
-        material = null
-      }
-      createParticles(currentProfile.count, document.documentElement.dataset.theme || 'dark')
-    }
-
-    window.addEventListener('themechange', handleThemeChange)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    startAnimation()
-  } catch (error) {
-    console.error('[BackgroundParticles] initialization error:', error)
-  }
+  buildScene()
+  resizeObserver = new ResizeObserver(handleResize)
+  resizeObserver.observe(container.value)
+  window.addEventListener('resize', handleResize, { passive: true })
+  visibilityListener = () => { running = document.visibilityState === 'visible' }
+  document.addEventListener('visibilitychange', visibilityListener)
+  themeListener = () => handleThemeChange()
+  window.addEventListener('themechange', themeListener)
+  animationId = requestAnimationFrame(animate)
 })
 
 onBeforeUnmount(() => {
-  isDestroyed = true
-  stopAnimation()
-
-  if (handleResize) {
-    window.removeEventListener('resize', handleResize)
-    handleResize = null
-  }
-
-  if (handleVisibilityChange) {
-    document.removeEventListener('visibilitychange', handleVisibilityChange)
-    handleVisibilityChange = null
-  }
-
-  if (handleThemeChange) {
-    window.removeEventListener('themechange', handleThemeChange)
-    handleThemeChange = null
-  }
-
-  if (geometry) {
-    geometry.dispose()
-    geometry = null
-  }
-
-  if (material) {
-    material.dispose()
-    material = null
-  }
-
-  if (scene) {
-    scene.clear()
-  }
-
-  particles = null
-  scene = null
-  camera = null
-
-  if (renderer) {
-    renderer.dispose()
-    renderer.forceContextLoss?.()
-
-    if (
-      container.value &&
-      renderer.domElement &&
-      renderer.domElement.parentNode === container.value
-    ) {
-      container.value.removeChild(renderer.domElement)
-    }
-  }
-
-  renderer = null
+  cancelAnimationFrame(animationId)
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', handleResize)
+  document.removeEventListener('visibilitychange', visibilityListener)
+  window.removeEventListener('themechange', themeListener)
+  geometry?.dispose()
+  material?.dispose()
+  renderer?.dispose()
+  renderer?.forceContextLoss?.()
+  renderer?.domElement?.remove()
 })
 </script>
 
 <style scoped>
-.background-particles {
-  position: fixed;
-  inset: 0;
-  z-index: -10;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  background: transparent;
-}
-
-.background-particles :deep(canvas) {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
+.background-particles{position:fixed;inset:0;z-index:-10;pointer-events:none;overflow:hidden}
+.background-particles :deep(canvas){display:block;width:100%;height:100%;background:transparent!important}
 </style>

@@ -1,183 +1,30 @@
-/* DynamicDbManager — unified Table Workspace UI */
-.table-page { color: var(--app-text); }
-
-.table-page .tabs-panel,
-.table-page .toolbar,
-.table-page .data-panel {
-  background: var(--app-surface);
-  border: 1px solid var(--app-border);
-  box-shadow: var(--app-shadow), inset 0 1px 0 var(--app-highlight);
-}
-
-.table-page .tabs-scroll,
-.table-page .table-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scroll-thumb) transparent;
-}
-.table-page .tabs-scroll::-webkit-scrollbar,
-.table-page .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-.table-page .tabs-scroll::-webkit-scrollbar-track,
-.table-page .table-scroll::-webkit-scrollbar-track { background: transparent; }
-.table-page .tabs-scroll::-webkit-scrollbar-thumb,
-.table-page .table-scroll::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 999px; }
-
-.table-page .tab,
-.table-page .toolbar-btn,
-.table-page .tab-arrow {
-  background: var(--app-control);
-  color: var(--app-text-soft);
-  border: 1px solid var(--app-border);
-}
-.table-page .tab:hover,
-.table-page .toolbar-btn:hover,
-.table-page .tab-arrow:hover {
-  background: var(--app-control-hover);
-  color: var(--app-text);
-  border-color: var(--app-border-strong);
-}
-.table-page .tab.active,
-.table-page .toolbar-btn.primary {
-  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2));
-  color: #fff;
-  border-color: var(--app-primary-border);
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--app-primary) 18%, transparent);
-}
-.table-page .toolbar-btn.danger {
-  background: var(--app-danger-soft);
-  color: var(--app-danger);
-  border-color: var(--app-danger-border);
-}
-.table-page .toolbar-btn.excel {
-  background: var(--app-success-soft);
-  color: var(--app-success);
-  border-color: var(--app-success-border);
-}
-
-.table-page .search-box input {
-  background: var(--app-input-bg);
-  color: var(--app-text);
-  border-color: var(--app-border);
-}
-.table-page .search-box input::placeholder { color: var(--app-muted); }
-.table-page .search-box input:focus {
-  border-color: var(--app-primary-border);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary) 10%, transparent);
-  outline: none;
-}
-
-.table-page .data-table {
-  color: var(--table-text);
-  background: var(--table-bg);
-  border-collapse: separate;
-  border-spacing: 0;
-}
-.table-page .data-table thead th {
-  background: var(--table-head-bg);
-  color: var(--table-head-text);
-  border-bottom: 1px solid var(--table-border);
-}
-.table-page .data-table thead th button {
-  color: inherit;
-  background: transparent;
-}
-.table-page .data-table tbody tr { background: var(--table-row-bg); }
-.table-page .data-table tbody td {
-  color: var(--table-text);
-  border-bottom: 1px solid var(--table-border);
-  background: transparent;
-}
-.table-page .data-table tbody tr:hover td { background: var(--table-row-hover); }
-.table-page .data-table tbody tr.selected td { background: var(--table-row-selected); }
-
-.table-page .actions-col {
-  background: var(--table-actions-bg);
-}
-
-.table-page .row-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px;
-  border: 1px solid var(--app-border);
-  border-radius: 10px;
-  background: var(--app-control-soft);
-}
-
-.table-page .row-action {
-  width: 32px;
-  min-width: 32px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0 7px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--app-text-soft);
-  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
-}
-.table-page .row-action:hover {
-  background: var(--app-control-hover);
-  color: var(--app-text);
-  border-color: var(--app-border);
-  transform: translateY(-1px);
-}
-.table-page .row-action.danger:hover {
-  background: var(--app-danger-soft);
-  color: var(--app-danger);
-  border-color: var(--app-danger-border);
-}
-
-.table-page .statusbar {
-  background: var(--table-footer-bg);
-  color: var(--table-footer-text);
-  border-top: 1px solid var(--table-footer-border);
-}
-.table-page .statusbar .page-btn,
-.table-page .statusbar .page-size select {
-  background: var(--app-control);
-  color: var(--app-text-soft);
-  border: 1px solid var(--app-border);
-}
-.table-page .statusbar .page-btn:hover:not(:disabled) {
-  background: var(--app-control-hover);
-  color: var(--app-text);
-}
-.table-page .statusbar .page-btn.active {
-  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2));
-  color: #fff;
-  border-color: var(--app-primary-border);
-}
-
-.table-page .modal-card {
-  background: var(--app-surface-strong);
-  color: var(--app-text);
-  border-color: var(--app-border-strong);
-}
-.table-page .modal-header h2,
-.table-page .field label,
-.table-page .form-section h3 { color: var(--app-text); }
-.table-page .modal-header p,
-.table-page .field small { color: var(--app-muted); }
-.table-page .modal-card input,
-.table-page .modal-card select,
-.table-page .modal-card textarea {
-  background: var(--app-input-bg);
-  color: var(--app-text);
-  border-color: var(--app-border);
-}
-.table-page .modal-card input:focus,
-.table-page .modal-card select:focus,
-.table-page .modal-card textarea:focus {
-  border-color: var(--app-primary-border);
-  outline: none;
-}
-
-/* Compact mobile actions */
-@media (max-width: 640px) {
-  .table-page .row-actions { gap: 2px; padding: 2px; }
-  .table-page .row-action { width: 29px; min-width: 29px; height: 27px; padding: 0; }
-  .table-page .row-action span { display: none; }
-}
+/* Unified Table Workspace theme */
+.table-page{color:var(--app-text)}
+.table-page .tabs-panel,.table-page .toolbar,.table-page .data-panel{background:var(--app-surface);border-color:var(--app-border);box-shadow:var(--app-shadow),inset 0 1px 0 var(--app-highlight)}
+.table-page .tabs-scroll,.table-page .table-scroll{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) transparent}.table-page .tabs-scroll::-webkit-scrollbar,.table-page .table-scroll::-webkit-scrollbar{width:8px;height:8px}.table-page .tabs-scroll::-webkit-scrollbar-thumb,.table-page .table-scroll::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:999px}.table-page .tabs-scroll::-webkit-scrollbar-track,.table-page .table-scroll::-webkit-scrollbar-track{background:transparent}
+.table-page .tab,.table-page .toolbar-btn,.table-page .tab-arrow{color:var(--app-text-soft);background:var(--app-control);border-color:var(--app-border)}
+.table-page .tab:hover,.table-page .toolbar-btn:hover,.table-page .tab-arrow:hover{color:var(--app-text);background:var(--app-control-hover);border-color:var(--app-border-strong)}
+.table-page .tab.active,.table-page .toolbar-btn.primary{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;border-color:var(--app-primary-border)}
+.table-page .toolbar-btn.excel{color:var(--app-success);background:var(--app-success-soft);border-color:var(--app-success-border)}
+.table-page .toolbar-btn.danger{color:var(--app-danger);background:var(--app-danger-soft);border-color:var(--app-danger-border)}
+.table-page .search-box,.table-page .search-box input,.table-page .search-results{background:var(--app-control);color:var(--app-text);border-color:var(--app-border)}
+.table-page .search-box input::placeholder{color:var(--app-muted)}
+.table-page .data-table{color:var(--table-text);background:var(--table-bg)}
+.table-page .data-table thead th{background:var(--table-head-bg);color:var(--table-head-text);border-color:var(--table-border)}
+.table-page .data-table thead th button{color:inherit}
+.table-page .data-table tbody td{background:var(--table-row-bg);color:var(--table-text);border-color:var(--table-border)}
+.table-page .data-table tbody tr:hover td{background:var(--table-row-hover)}
+.table-page .data-table .actions-col{background:var(--table-actions-bg)}
+.table-page .data-table .row-actions{background:var(--table-actions-bg);border-color:var(--table-border)}
+.table-page .data-table .row-action{color:var(--app-text-soft);background:var(--app-control);border-color:var(--app-border)}
+.table-page .data-table .row-action:hover{color:var(--app-text);background:var(--app-control-hover);border-color:var(--app-border-strong)}
+.table-page .data-table .row-action.danger{color:var(--app-danger);background:var(--app-danger-soft);border-color:var(--app-danger-border)}
+.table-page .statusbar{background:var(--table-footer-bg);color:var(--table-footer-text);border-color:var(--table-footer-border)}
+.table-page .modal-backdrop{background:color-mix(in srgb,var(--app-bg) 72%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.table-page .modal-card{background:var(--app-surface-strong);color:var(--app-text);border-color:var(--app-border-strong);box-shadow:var(--app-shadow-lg)}
+.table-page .modal-card input,.table-page .modal-card select,.table-page .modal-card textarea{background:var(--app-input-bg);color:var(--app-text);border-color:var(--app-border)}
+.table-page .modal-card input::placeholder,.table-page .modal-card textarea::placeholder{color:var(--app-muted)}
+.table-page .modal-card .modal-btn{background:var(--app-control);color:var(--app-text-soft);border-color:var(--app-border)}
+.table-page .modal-card .modal-btn:hover{background:var(--app-control-hover);color:var(--app-text);border-color:var(--app-border-strong)}
+.table-page .modal-card .modal-btn.primary{background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;border-color:var(--app-primary-border)}
+.table-page .modal-card .modal-btn.danger{background:var(--app-danger-soft);color:var(--app-danger);border-color:var(--app-danger-border)}

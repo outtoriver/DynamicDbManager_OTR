@@ -1,41 +1,60 @@
 import { defineStore } from 'pinia'
-import apiClient from '../api'
-import { useAdminStore } from './admin'
+
+function decodeJwtPayload(token) {
+  try {
+    const part = String(token || '').split('.')[1]
+    if (!part) return null
+
+    const base64 = part.replace(/-/g, '+').replace(/_/g, '/')
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')
+    const binary = atob(padded)
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0))
+    return JSON.parse(new TextDecoder().decode(bytes))
+  } catch {
+    return null
+  }
+}
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: localStorage.getItem('token') || '',
     user: null
   }),
+
   getters: {
-    isAuthenticated: (state) => !!state.token,
+    isAuthenticated: (state) => Boolean(state.token),
+
     isAdmin: (state) => {
-      if (!state.token) return false
-      try {
-        const payload = JSON.parse(atob(state.token.split('.')[1]))
-        const roles = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
-        if (Array.isArray(roles)) return roles.includes('Admin')
-        if (typeof roles === 'string') return roles === 'Admin'
-        return false
-      } catch {
-        return false
-      }
+      const payload = decodeJwtPayload(state.token)
+      const role = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+      const roles = payload?.[role] ?? payload?.role ?? payload?.roles
+      return Array.isArray(roles)
+        ? roles.some(value => String(value).toLowerCase() === 'admin')
+        : String(roles || '').toLowerCase() === 'admin'
+    },
+
+    userName: (state) => {
+      const payload = decodeJwtPayload(state.token)
+      return payload?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload?.name || ''
     }
   },
+
   actions: {
-    async login(username, password) {
-      const res = await apiClient.post('/auth/login', { userName: username, password })
-      this.token = res.data.token
-      localStorage.setItem('token', this.token)
+    setToken(token) {
+      this.token = token || ''
+      if (this.token) localStorage.setItem('token', this.token)
+      else localStorage.removeItem('token')
     },
-    async register(username, email, password) {
-      await apiClient.post('/auth/register', { userName: username, email, password })
+
+    login(token, user = null) {
+      this.setToken(token)
+      this.user = user
     },
+
     logout() {
       this.token = ''
+      this.user = null
       localStorage.removeItem('token')
-      const adminStore = useAdminStore()
-      adminStore.reset()
     }
   }
 })

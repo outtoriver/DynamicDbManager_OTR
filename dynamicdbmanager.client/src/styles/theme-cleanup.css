@@ -1,110 +1,133 @@
-/* DynamicDbManager — compatibility rules for components that still use local hard-coded colors. */
+/* Theme cleanup: legacy component color bridge kept intentionally small. */
+html[data-theme="light"] body .table-main h3{color:var(--app-text)}
+html[data-theme="light"] body .table-main p,html[data-theme="light"] body .table-description,html[data-theme="light"] body .table-meta{color:var(--app-muted)}
+html[data-theme="light"] body .table-card,html[data-theme="light"] body .table-list-card{background:var(--app-surface);border-color:var(--app-border);box-shadow:var(--app-shadow)}
+html[data-theme="light"] body .open-btn{background:var(--app-control);border-color:var(--app-border);color:var(--app-primary-text)}
+html[data-theme="light"] body .open-btn:hover{background:var(--app-control-hover);border-color:var(--app-accent-border);color:var(--app-primary-text)}
+html[data-theme="light"] body .icon-action{background:var(--app-control);border-color:var(--app-border);color:var(--app-muted)}
+html[data-theme="light"] body .icon-action:hover{background:var(--app-control-hover);color:var(--app-text);border-color:var(--app-border-strong)}
+html[data-theme="light"] body .floating-circle{opacity:.55}
 
-.home-page,
-.table-grid { color: var(--app-text); }
+/* =============================================================
+   FINAL THEME NORMALIZATION
+   No legacy admin/table theme files are required.
+   ============================================================= */
 
-.home-page .eyebrow { color: var(--app-muted); }
-.home-page .eyebrow-dot {
-  background: var(--app-primary);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--app-primary) 55%, transparent);
-}
-
-.home-page .hero-button,
-.home-page .circle-btn {
-  color: var(--app-text-soft);
-  background: var(--app-control);
-  border-color: var(--app-border);
-}
-.home-page .hero-button:hover,
-.home-page .circle-btn:hover {
+/* Home / TableList */
+.table-grid .table-card,
+.table-grid .glass-panel,
+.home-page .glass-card {
   color: var(--app-text);
-  background: var(--app-control-hover);
-  border-color: var(--app-accent-border);
-}
-.home-page .hero-button.primary {
-  color: #fff;
-  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-2));
-  border-color: var(--app-primary-border);
-}
-.home-page .hero-button.excel {
-  color: var(--app-success);
-  background: var(--app-success-soft);
-  border-color: var(--app-success-border);
-}
-
-.home-page .stat-card,
-.home-page .create-section .glass-card,
-.table-grid .table-card {
-  color: var(--app-text);
-  background: var(--app-surface);
-  border-color: var(--app-border);
-}
-.home-page .stat-card small,
-.home-page .section-heading p { color: var(--app-muted); }
-
-.home-page .search-box {
-  background: var(--app-control);
-  border-color: var(--app-border);
-}
-.home-page .search-box svg { color: var(--app-muted); }
-.home-page .search-box input {
-  color: var(--app-text);
-  background: transparent;
-}
-.home-page .search-box input::placeholder { color: var(--app-muted); }
-.home-page .search-box button,
-.home-page .result-count { color: var(--app-muted); }
-
-.table-grid .table-card:hover {
-  background: var(--app-control-hover);
-  border-color: var(--app-accent-border);
 }
 .table-grid .table-main h3 { color: var(--app-text); }
 .table-grid .table-main p { color: var(--app-muted); }
-.table-grid .table-main p span { color: var(--app-muted); }
-.table-grid .table-icon {
-  color: var(--app-primary);
-  background: var(--app-accent-soft);
-  border-color: var(--app-accent-border);
-}
-.table-grid .meta-chip,
-.table-grid .open-btn,
+.table-grid .table-icon,
 .table-grid .icon-action {
+  border-color: var(--app-border);
+  background: var(--app-control-soft);
   color: var(--app-text-soft);
-  background: var(--app-control);
-  border-color: var(--app-border);
 }
-.table-grid .meta-chip:hover,
-.table-grid .open-btn:hover,
-.table-grid .icon-action:hover {
-  color: var(--app-text);
-  background: var(--app-control-hover);
-  border-color: var(--app-accent-border);
-}
-.table-grid .date-text { color: var(--app-muted); }
-.table-grid .icon-action.success {
-  color: var(--app-success);
-  background: var(--app-success-soft);
-  border-color: var(--app-success-border);
-}
-.table-grid .icon-action.danger {
-  color: var(--app-danger);
-  background: var(--app-danger-soft);
-  border-color: var(--app-danger-border);
-}
-.table-grid .edit-icon {
-  color: var(--app-primary);
-  background: var(--app-accent-soft);
-}
-.table-grid .empty-state,
-.table-grid .empty-state p { color: var(--app-muted); }
-.table-grid .empty-state h3 { color: var(--app-text); }
-.table-grid .empty-icon {
-  color: var(--app-primary);
-  background: var(--app-control);
-  border-color: var(--app-border);
-}
+.table-grid .icon-action.success { color: var(--app-success); }
+.table-grid .icon-action:hover { background: var(--app-hover); }
 
-@media (max-width: 720px) {
-  .home-page .hero-button { min-height: 38px; }
+/* Generic creation form */
+.create-form .field > span,
+.create-form .field label,
+.create-form .column-switches label { color: var(--app-text-soft); }
+.create-form .field small,
+.create-form .columns-empty,
+.create-form .create-footer { color: var(--app-muted); }
+.create-form .column-card,
+.create-form .columns-empty {
+  background: var(--app-panel-soft);
+  border-color: var(--app-panel-soft-border);
+  color: var(--app-text);
 }
+.create-form .column-number { background: var(--app-control-soft); color: var(--app-muted); }
+.create-form .add-column { color: var(--app-primary); border-color: var(--app-accent-border); background: var(--app-accent-soft); }
+.create-form .remove-column { background: var(--app-control-soft); border-color: var(--app-border); color: var(--app-muted); }
+.create-form .form-error { color: var(--app-danger); background: var(--app-danger-soft); border-color: var(--app-danger-border); }
+
+/* Excel transfer modal */
+html[data-theme="light"] .excel-backdrop { background: var(--app-modal-backdrop); }
+html[data-theme="light"] .excel-modal { background: var(--app-modal); color: var(--app-text); border-color: var(--app-modal-border); box-shadow: 0 30px 90px rgba(56,75,105,.18); }
+html[data-theme="light"] .excel-header,
+html[data-theme="light"] .excel-tabs,
+html[data-theme="light"] .preview-head,
+html[data-theme="light"] .mapping-head { border-color: var(--app-panel-soft-border); }
+html[data-theme="light"] .excel-header h2,
+html[data-theme="light"] .excel-header p,
+html[data-theme="light"] .excel-tabs button,
+html[data-theme="light"] .field-card > label,
+html[data-theme="light"] .file-copy strong,
+html[data-theme="light"] .switch-label strong,
+html[data-theme="light"] .preview-head strong,
+html[data-theme="light"] .mapping-head strong,
+html[data-theme="light"] .export-hero h3 { color: var(--app-text); }
+html[data-theme="light"] .excel-header p,
+html[data-theme="light"] .field-help,
+html[data-theme="light"] .file-copy span,
+html[data-theme="light"] .switch-label small,
+html[data-theme="light"] .preview-head > span,
+html[data-theme="light"] .mapping-head > span,
+html[data-theme="light"] .export-hero p,
+html[data-theme="light"] .export-row span,
+html[data-theme="light"] .excel-footer-info { color: var(--app-muted); }
+html[data-theme="light"] .field-card,
+html[data-theme="light"] .preview-card,
+html[data-theme="light"] .mapping-card,
+html[data-theme="light"] .export-list { background: var(--app-panel-soft); border-color: var(--app-panel-soft-border); }
+html[data-theme="light"] .excel-input,
+html[data-theme="light"] .mini-btn,
+html[data-theme="light"] .file-drop,
+html[data-theme="light"] .switch-row,
+html[data-theme="light"] .mapping-pill { background: var(--app-field); border-color: var(--app-field-border); color: var(--app-text); }
+html[data-theme="light"] .excel-input::placeholder { color: var(--app-field-placeholder); }
+html[data-theme="light"] .excel-input:focus { border-color: var(--app-primary-border); box-shadow: 0 0 0 3px rgba(79,70,229,.08); }
+html[data-theme="light"] .file-drop.selected { background: var(--app-active); border-color: var(--app-accent-border); }
+html[data-theme="light"] .file-icon,
+html[data-theme="light"] .export-icon { background: var(--app-primary-soft); color: var(--app-primary); border-color: var(--app-primary-border); }
+html[data-theme="light"] .excel-close { background: var(--app-control); color: var(--app-muted); border-color: var(--app-border); }
+html[data-theme="light"] .excel-close:hover,
+html[data-theme="light"] .mini-btn:hover { background: var(--app-control-hover); color: var(--app-text); }
+html[data-theme="light"] .excel-tabs button.active { background: var(--app-active); color: var(--app-primary-text); border-color: var(--app-accent-border); }
+html[data-theme="light"] .preview-table th { background: #eef2f7; color: #334155; border-color: var(--app-table-border); }
+html[data-theme="light"] .preview-table td { color: #475569; border-color: #e8edf3; }
+html[data-theme="light"] .preview-table tr:hover td { background: #f8fafc; }
+html[data-theme="light"] .excel-error { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+
+/* TableData modals and form controls */
+html[data-theme="light"] .modal-backdrop { background: var(--app-modal-backdrop); }
+html[data-theme="light"] .modal-card { background: var(--app-modal); color: var(--app-text); border-color: var(--app-modal-border); box-shadow: 0 30px 90px rgba(56,75,105,.18); }
+html[data-theme="light"] .modal-card .modal-header,
+html[data-theme="light"] .modal-card .attachments,
+html[data-theme="light"] .modal-card .modal-actions { border-color: var(--app-panel-soft-border); }
+html[data-theme="light"] .modal-header h2,
+html[data-theme="light"] .modal-header p,
+html[data-theme="light"] .form-section h3,
+html[data-theme="light"] .field label,
+html[data-theme="light"] .check-line,
+html[data-theme="light"] .attachments-title { color: var(--app-text-soft); }
+html[data-theme="light"] .field input,
+html[data-theme="light"] .column-row input,
+html[data-theme="light"] .column-row select { background: var(--app-field); color: var(--app-text); border-color: var(--app-field-border); }
+html[data-theme="light"] .field input::placeholder,
+html[data-theme="light"] .column-row input::placeholder { color: var(--app-field-placeholder); }
+html[data-theme="light"] .form-section,
+html[data-theme="light"] .attachment { background: var(--app-panel-soft); border-color: var(--app-panel-soft-border); }
+html[data-theme="light"] .modal-close,
+html[data-theme="light"] .modal-btn { background: var(--app-control); color: var(--app-text-soft); border-color: var(--app-border); }
+html[data-theme="light"] .modal-close:hover,
+html[data-theme="light"] .modal-btn:not(.primary):not(.danger):hover { background: var(--app-control-hover); color: var(--app-text); }
+html[data-theme="light"] .file-btn { background: var(--app-primary-soft); color: var(--app-primary-text); border-color: var(--app-primary-border); }
+html[data-theme="light"] .attachment { color: var(--app-text-soft); }
+html[data-theme="light"] .attachment-btn { color: var(--app-muted); }
+html[data-theme="light"] .modal-btn.primary { background: linear-gradient(135deg,#4f46e5,#2563eb); color: #fff; }
+html[data-theme="light"] .modal-btn.danger { background: var(--app-danger-soft); color: var(--app-danger); border-color: var(--app-danger-border); }
+
+/* Shared scrollbars */
+* { scrollbar-color: var(--app-scroll-thumb) var(--app-scroll-track); scrollbar-width: thin; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--app-scroll-track); }
+*::-webkit-scrollbar-thumb { background: var(--app-scroll-thumb); border-radius: 999px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--app-scroll-thumb-hover); }

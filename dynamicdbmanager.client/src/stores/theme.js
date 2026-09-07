@@ -10,20 +10,22 @@ function getSystemTheme() {
 
 function applyTheme(mode) {
   if (typeof document === 'undefined') return
+
   const effective = mode === 'system' ? getSystemTheme() : mode
   const root = document.documentElement
+
   root.dataset.theme = effective
   root.dataset.themeMode = mode
   root.classList.toggle('dark', effective === 'dark')
   root.style.colorScheme = effective
-  window.dispatchEvent(new CustomEvent('themechange', { detail: { mode, effective } }))
 }
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    mode: typeof localStorage !== 'undefined' && MODES.includes(localStorage.getItem(STORAGE_KEY))
-      ? localStorage.getItem(STORAGE_KEY)
-      : 'system',
+    mode:
+      typeof localStorage !== 'undefined' && MODES.includes(localStorage.getItem(STORAGE_KEY))
+        ? localStorage.getItem(STORAGE_KEY)
+        : 'system',
     systemTheme: getSystemTheme(),
     _media: null,
     _listener: null,
@@ -31,9 +33,12 @@ export const useThemeStore = defineStore('theme', {
   }),
 
   getters: {
-    effectiveTheme: state => state.mode === 'system' ? state.systemTheme : state.mode,
-    isDark: state => state.mode === 'system' ? state.systemTheme === 'dark' : state.mode === 'dark',
-    isLight: state => state.mode === 'system' ? state.systemTheme === 'light' : state.mode === 'light'
+    effectiveTheme: state =>
+      state.mode === 'system' ? state.systemTheme : state.mode,
+    isDark: state =>
+      state.mode === 'system' ? state.systemTheme === 'dark' : state.mode === 'dark',
+    isLight: state =>
+      state.mode === 'system' ? state.systemTheme === 'light' : state.mode === 'light'
   },
 
   actions: {
@@ -41,10 +46,12 @@ export const useThemeStore = defineStore('theme', {
       this.mode = MODES.includes(localStorage.getItem(STORAGE_KEY))
         ? localStorage.getItem(STORAGE_KEY)
         : 'system'
+
       this.systemTheme = getSystemTheme()
       applyTheme(this.mode)
 
       if (this._initialized) return
+
       this._initialized = true
 
       if (window.matchMedia) {
@@ -59,6 +66,7 @@ export const useThemeStore = defineStore('theme', {
 
     setMode(mode) {
       const normalized = MODES.includes(mode) ? mode : 'system'
+
       this.mode = normalized
       this.systemTheme = getSystemTheme()
       localStorage.setItem(STORAGE_KEY, normalized)
@@ -66,7 +74,13 @@ export const useThemeStore = defineStore('theme', {
     },
 
     toggle() {
-      const next = this.mode === 'dark' ? 'light' : this.mode === 'light' ? 'system' : 'dark'
+      const next =
+        this.mode === 'dark'
+          ? 'light'
+          : this.mode === 'light'
+            ? 'system'
+            : 'dark'
+
       this.setMode(next)
     },
 

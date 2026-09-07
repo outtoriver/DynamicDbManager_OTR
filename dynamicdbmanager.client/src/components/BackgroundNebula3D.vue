@@ -1,89 +1,128 @@
-<template>
-  <div ref="container" class="background-nebula" aria-hidden="true"></div>
-</template>
+<template><div ref="container" class="background-nebula" aria-hidden="true"></div></template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
 
 const container = ref(null)
-let scene, camera, renderer, group, animationId, resizeHandler, visibilityHandler
-let texture, cloudA, cloudB, stars
+let scene
+let camera
+let renderer
+let cloud
+let stars
+let cloudGeometry
+let starGeometry
+let cloudMaterial
+let starMaterial
+let raf
+let themeListener
+let resizeObserver
 let running = true
 let last = 0
-let themeHandler = null
 
 const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+const lightTheme = () => document.documentElement.dataset.theme === 'light'
 
-function applyTheme() {
-  if (!renderer) return
-  renderer.setClearColor(document.documentElement.dataset.theme === 'light' ? 0xeaf0f8 : 0x050712, 1)
-}
+function rebuildMaterials() {
+  if (!cloudGeometry || !starGeometry) return
+  cloudMaterial?.dispose()
+  starMaterial?.dispose()
+  const light = lightTheme()
 
-function glowTexture(size=96){
-  const c=document.createElement('canvas'); c.width=c.height=size
-  const x=c.getContext('2d'); const g=x.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2)
-  g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(.3,'rgba(190,220,255,.85)'); g.addColorStop(.7,'rgba(120,160,255,.24)'); g.addColorStop(1,'rgba(0,0,0,0)')
-  x.fillStyle=g; x.fillRect(0,0,size,size)
-  const t=new THREE.CanvasTexture(c); if('colorSpace' in t)t.colorSpace=THREE.SRGBColorSpace; return t
-}
+  const cloudColors = light ? ['#38bdf8', '#6366f1', '#a78bfa'] : ['#22d3ee', '#8b5cf6', '#ec4899']
+  const starColor = light ? '#334155' : '#e2e8f0'
 
-function makeCloud(count, radius, thickness, colors){
-  const pos=new Float32Array(count*3), col=new Float32Array(count*3), tmp=new THREE.Color(), a=new THREE.Color(colors[0]), b=new THREE.Color(colors[1])
-  for(let i=0;i<count;i++){
-    const i3=i*3, r=Math.pow(Math.random(),.7)*radius, ang=Math.random()*Math.PI*2
-    const spread=(Math.random()-.5)*thickness*(.3+r/radius)
-    pos[i3]=Math.cos(ang)*r + spread
-    pos[i3+1]=(Math.random()-.5)*thickness*(1-r/radius)
-    pos[i3+2]=Math.sin(ang)*r + spread
-    tmp.copy(a).lerp(b,Math.random()); const boost=.35+Math.random()*.65
-    col[i3]=tmp.r*boost; col[i3+1]=tmp.g*boost; col[i3+2]=tmp.b*boost
+  const cloudColorsAttribute = new Float32Array(cloudGeometry.attributes.position.count * 3)
+  for (let i = 0; i < cloudGeometry.attributes.position.count; i += 1) {
+    const c = new THREE.Color(cloudColors[i % cloudColors.length])
+    cloudColorsAttribute[i * 3] = c.r
+    cloudColorsAttribute[i * 3 + 1] = c.g
+    cloudColorsAttribute[i * 3 + 2] = c.b
   }
-  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3)); g.setAttribute('color',new THREE.BufferAttribute(col,3))
-  const m=new THREE.PointsMaterial({size:1.8,map:texture,transparent:true,opacity:.12,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,sizeAttenuation:true})
-  return new THREE.Points(g,m)
+  cloudGeometry.setAttribute('color', new THREE.Float32BufferAttribute(cloudColorsAttribute, 3))
+
+  cloudMaterial = new THREE.PointsMaterial({ size: light ? 0.085 : 0.11, transparent: true, opacity: light ? 0.12 : 0.18, vertexColors: true, depthWrite: false, blending: THREE.AdditiveBlending })
+  starMaterial = new THREE.PointsMaterial({ size: light ? 0.025 : 0.035, color: starColor, transparent: true, opacity: light ? 0.28 : 0.55, depthWrite: false })
+
+  cloud.material = cloudMaterial
+  stars.material = starMaterial
 }
 
-function build(){
-  const mobile=window.innerWidth<=768
-  const count=mobile?700:1400
-  group=new THREE.Group(); scene.add(group)
-  cloudA=makeCloud(count,15,5,['0x6ee7f9','0x6366f1']); cloudA.rotation.z=.35; group.add(cloudA)
-  cloudB=makeCloud(Math.round(count*.75),11,4,['0xa78bfa','0xec4899']); cloudB.rotation.z=-.6; group.add(cloudB)
+function build() {
+  scene = new THREE.Scene()
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100)
+  camera.position.z = 9
+  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'high-performance' })
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
+  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setClearColor(0x000000, 0)
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+  container.value.appendChild(renderer.domElement)
 
-  const starCount=mobile?350:700
-  const p=new Float32Array(starCount*3), c=new Float32Array(starCount*3), temp=new THREE.Color()
-  for(let i=0;i<starCount;i++){const i3=i*3,r=24+Math.random()*26,t=Math.random()*Math.PI*2,u=Math.acos(2*Math.random()-1);p[i3]=r*Math.sin(u)*Math.cos(t);p[i3+1]=r*Math.sin(u)*Math.sin(t)*.35;p[i3+2]=r*Math.cos(u);const br=.25+Math.random()*.65;temp.setHSL(.58+Math.random()*.1,.55,br);c[i3]=temp.r;c[i3+1]=temp.g;c[i3+2]=temp.b}
-  const sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.BufferAttribute(p,3)); sg.setAttribute('color',new THREE.BufferAttribute(c,3))
-  stars=new THREE.Points(sg,new THREE.PointsMaterial({size:.1,map:texture,transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,sizeAttenuation:true})); scene.add(stars)
+  const count = reducedMotion ? 1000 : 2300
+  const positions = new Float32Array(count * 3)
+  for (let i = 0; i < count; i += 1) {
+    const angle = Math.random() * Math.PI * 2
+    const radius = Math.pow(Math.random(), 0.8) * 7
+    positions[i * 3] = Math.cos(angle) * radius + (Math.random() - 0.5) * 1.2
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 4.5
+    positions[i * 3 + 2] = Math.sin(angle) * radius * 0.45
+  }
+  cloudGeometry = new THREE.BufferGeometry()
+  cloudGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  cloud = new THREE.Points(cloudGeometry, new THREE.PointsMaterial())
+  scene.add(cloud)
+
+  const starCount = reducedMotion ? 500 : 1000
+  const starPositions = new Float32Array(starCount * 3)
+  for (let i = 0; i < starCount; i += 1) {
+    starPositions[i * 3] = (Math.random() - 0.5) * 26
+    starPositions[i * 3 + 1] = (Math.random() - 0.5) * 15
+    starPositions[i * 3 + 2] = (Math.random() - 0.5) * 18
+  }
+  starGeometry = new THREE.BufferGeometry()
+  starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3))
+  stars = new THREE.Points(starGeometry, new THREE.PointsMaterial())
+  scene.add(stars)
+  rebuildMaterials()
 }
 
-function frame(now){
-  if(!running){animationId=null;return}
-  const interval=1000/(window.innerWidth<=768?30:45)
-  if(now-last<interval){animationId=requestAnimationFrame(frame);return}
-  const dt=Math.min(64,now-(last||now-16))/16.67; last=now
-  if(!reducedMotion){group.rotation.y+=.00035*dt; group.rotation.x=Math.sin(now*.00008)*.035; cloudA.rotation.z+=.00011*dt; cloudB.rotation.z-=.00008*dt; stars.rotation.y+=.00007*dt}
-  renderer.render(scene,camera); animationId=requestAnimationFrame(frame)
+function resize() {
+  if (!camera || !renderer) return
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
 }
-function start(){if(!animationId){last=performance.now();animationId=requestAnimationFrame(frame)}}
-function stop(){if(animationId)cancelAnimationFrame(animationId);animationId=null}
-function dispose(o){if(!o)return;o.geometry?.dispose();const m=o.material; if(m){(Array.isArray(m)?m:[m]).forEach(x=>{x.map?.dispose();x.dispose()})}}
 
-onMounted(()=>{
-  const w=window.innerWidth,h=window.innerHeight
-  scene=new THREE.Scene(); camera=new THREE.PerspectiveCamera(52,w/h,.1,1000); camera.position.set(0,5,18); camera.lookAt(0,0,0)
-  renderer=new THREE.WebGLRenderer({antialias:w>768,alpha:false,powerPreference:'high-performance',stencil:false}); renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,w>768?1.5:1.2)); renderer.setSize(w,h,false); applyTheme(); if('outputColorSpace' in renderer)renderer.outputColorSpace=THREE.SRGBColorSpace; container.value.appendChild(renderer.domElement)
-  texture=glowTexture(); build();
-  resizeHandler=()=>{const w2=window.innerWidth,h2=window.innerHeight;camera.aspect=w2/h2;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,w2>768?1.5:1.2));renderer.setSize(w2,h2,false)}
-  visibilityHandler=()=>{running=!document.hidden; if(running)start(); else stop()}
-  window.addEventListener('resize',resizeHandler,{passive:true}); document.addEventListener('visibilitychange',visibilityHandler); themeHandler=()=>applyTheme(); window.addEventListener('themechange',themeHandler); start()
+function animate(now) {
+  if (!running) { raf = requestAnimationFrame(animate); return }
+  raf = requestAnimationFrame(animate)
+  if (now - last < 40) return
+  last = now
+  if (!reducedMotion) {
+    cloud.rotation.y += 0.00022
+    cloud.rotation.x += 0.00006
+  }
+  renderer.render(scene, camera)
+}
+
+onMounted(() => {
+  build()
+  resizeObserver = new ResizeObserver(resize)
+  resizeObserver.observe(container.value)
+  window.addEventListener('resize', resize, { passive: true })
+  themeListener = () => rebuildMaterials()
+  window.addEventListener('themechange', themeListener)
+  raf = requestAnimationFrame(animate)
 })
 
-onBeforeUnmount(()=>{stop();window.removeEventListener('resize',resizeHandler);document.removeEventListener('visibilitychange',visibilityHandler);if(themeHandler)window.removeEventListener('themechange',themeHandler);[cloudA,cloudB,stars].forEach(dispose);texture?.dispose();scene?.clear();renderer?.dispose();renderer?.forceContextLoss?.();if(renderer?.domElement?.parentNode===container.value)container.value.removeChild(renderer.domElement);scene=null;camera=null;renderer=null})
+onBeforeUnmount(() => {
+  cancelAnimationFrame(raf)
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', resize)
+  window.removeEventListener('themechange', themeListener)
+  cloudGeometry?.dispose(); starGeometry?.dispose(); cloudMaterial?.dispose(); starMaterial?.dispose(); renderer?.dispose(); renderer?.forceContextLoss?.(); renderer?.domElement?.remove()
+})
 </script>
 
-<style scoped>
-.background-nebula{position:fixed;inset:0;z-index:-10;width:100%;height:100%;pointer-events:none;overflow:hidden;background:#050712}
-.background-nebula :deep(canvas){display:block;width:100%;height:100%}
-</style>
+<style scoped>.background-nebula{position:fixed;inset:0;z-index:-10;pointer-events:none;overflow:hidden}.background-nebula :deep(canvas){width:100%;height:100%;display:block;background:transparent!important}</style>

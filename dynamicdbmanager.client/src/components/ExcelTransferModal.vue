@@ -9,17 +9,16 @@
               <h2 id="excel-title">Импорт / экспорт Excel</h2>
               <p>Перенос данных между Excel и Dynamic DB Manager без изменения существующей структуры.</p>
             </div>
-            <button type="button" class="excel-close" @click="close">×</button>
+            <button type="button" class="excel-close" @click="close" aria-label="Закрыть">×</button>
           </header>
 
-          <div class="excel-tabs">
+          <div class="excel-tabs" role="tablist" aria-label="Операция Excel">
             <button type="button" :class="{ active: mode === 'new' }" @click="mode = 'new'">Новая таблица</button>
             <button type="button" :class="{ active: mode === 'existing' }" @click="mode = 'existing'">В существующую</button>
             <button type="button" :class="{ active: mode === 'export' }" @click="mode = 'export'">Экспорт</button>
           </div>
 
           <div class="excel-body">
-            <!-- NEW TABLE -->
             <template v-if="mode === 'new'">
               <div class="excel-grid two">
                 <div class="field-card">
@@ -37,7 +36,7 @@
 
                 <div class="field-card">
                   <label>Название новой таблицы</label>
-                  <input v-model="newTableName" class="excel-input" placeholder="Например: Сотрудники" />
+                  <input v-model.trim="newTableName" class="excel-input" placeholder="Например: Сотрудники" />
                   <div class="field-help">Если оставить пустым, будет использовано имя Excel-файла.</div>
                 </div>
               </div>
@@ -46,14 +45,15 @@
                 <div class="field-card">
                   <label>Лист</label>
                   <select v-model="sheetName" class="excel-input" @change="loadPreview">
-                    <option v-for="sheet in preview.sheets" :key="sheet.name" :value="sheet.name">{{ sheet.name }}</option>
+                    <option v-for="sheet in preview.sheets || []" :key="sheet.name" :value="sheet.name">{{ sheet.name }}</option>
                   </select>
                   <div class="field-help">Используемый диапазон: {{ preview.usedRange || 'не определён' }}</div>
                 </div>
+
                 <div class="field-card">
                   <label>Диапазон</label>
-                  <input v-model="range" class="excel-input" placeholder="A1:F100 (пусто = весь используемый диапазон)" @change="loadPreview" @keyup.enter="loadPreview" />
-                  <div class="field-help">Первая строка диапазона будет заголовками колонок.</div>
+                  <input v-model="range" class="excel-input" placeholder="A1:F100 (пусто = весь диапазон)" @change="loadPreview" @keyup.enter="loadPreview" />
+                  <div class="field-help">Первая строка диапазона используется как заголовок.</div>
                 </div>
               </div>
 
@@ -80,7 +80,6 @@
               </footer>
             </template>
 
-            <!-- EXISTING TABLE -->
             <template v-else-if="mode === 'existing'">
               <div class="excel-grid two">
                 <div class="field-card">
@@ -110,7 +109,7 @@
                 <div class="field-card">
                   <label>Лист</label>
                   <select v-model="sheetName" class="excel-input" @change="loadPreview">
-                    <option v-for="sheet in preview.sheets" :key="sheet.name" :value="sheet.name">{{ sheet.name }}</option>
+                    <option v-for="sheet in preview.sheets || []" :key="sheet.name" :value="sheet.name">{{ sheet.name }}</option>
                   </select>
                 </div>
                 <div class="field-card">
@@ -123,7 +122,7 @@
                 <label class="switch-label">
                   <input v-model="hasHeaders" type="checkbox" />
                   <span class="switch"></span>
-                  <span><strong>Первая строка — заголовки</strong><small>Заголовки используются для сопоставления колонок.</small></span>
+                  <span><strong>Первая строка — заголовки</strong><small>Заголовки используются для сопоставления.</small></span>
                 </label>
                 <label class="switch-label">
                   <input v-model="mapByHeader" type="checkbox" :disabled="!hasHeaders" />
@@ -157,11 +156,10 @@
               </footer>
             </template>
 
-            <!-- EXPORT -->
             <template v-else>
               <div class="export-hero">
                 <div class="export-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 3h8l4 4v14H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z" stroke-width="1.7"/><path d="M15 3v5h5M8 12h8M8 16h8" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M7 3h8l4 4v14H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z" stroke-width="1.7"/><path d="M15 3v5h5M8 12h8M8 16h8" stroke-width="1.7" stroke-linecap="round"/></svg>
                 </div>
                 <div>
                   <div class="excel-eyebrow">XLSX EXPORT</div>
@@ -202,7 +200,7 @@
 </template>
 
 <script setup>
-import { computed, defineComponent, h, ref, watch } from 'vue'
+import { computed, defineComponent, h, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { excelApi } from '../api'
 
 const props = defineProps({
@@ -236,16 +234,25 @@ const targetTable = computed(() =>
 )
 
 const targetColumns = computed(() =>
-  Array.isArray(targetTable.value?.tableColumns) ? targetTable.value.tableColumns : []
+  Array.isArray(targetTable.value?.tableColumns)
+    ? targetTable.value.tableColumns
+    : []
 )
 
-watch(() => props.selectedTableId, value => {
-  if (value !== undefined && value !== null && value !== '') targetTableId.value = String(value)
-})
+watch(
+  () => props.selectedTableId,
+  value => {
+    if (value !== undefined && value !== null && value !== '') {
+      targetTableId.value = String(value)
+    }
+  }
+)
 
-watch(mode, () => {
+watch(mode, value => {
   error.value = ''
-  if (mode.value === 'export' && props.selectedTableId) targetTableId.value = String(props.selectedTableId)
+  if (value === 'export' && props.selectedTableId) {
+    targetTableId.value = String(props.selectedTableId)
+  }
 })
 
 function close() {
@@ -267,6 +274,11 @@ function reset() {
   if (props.selectedTableId) targetTableId.value = String(props.selectedTableId)
 }
 
+function resetPreview() {
+  preview.value = null
+  error.value = ''
+}
+
 function openFilePicker() {
   fileInput.value?.click()
 }
@@ -274,25 +286,33 @@ function openFilePicker() {
 async function onFileChange(event) {
   const selected = event.target.files?.[0]
   if (!selected) return
+
   file.value = selected
   error.value = ''
   preview.value = null
   sheetName.value = ''
   range.value = ''
+
   if (!newTableName.value) {
     newTableName.value = selected.name.replace(/\.(xlsx|xls)$/i, '')
   }
+
   await loadPreview()
 }
 
 async function loadPreview() {
-  if (!file.value) return
+  if (!file.value || busy.value) return
+
   busy.value = true
   error.value = ''
+
   try {
     const { data } = await excelApi.preview(file.value, sheetName.value, range.value)
     preview.value = data
-    if (!sheetName.value && data.sheets?.length) sheetName.value = data.sheets[0].name
+
+    if (!sheetName.value && Array.isArray(data?.sheets) && data.sheets.length) {
+      sheetName.value = data.sheets[0].name
+    }
   } catch (err) {
     preview.value = null
     error.value = getError(err, 'Не удалось прочитать Excel-файл')
@@ -302,9 +322,11 @@ async function loadPreview() {
 }
 
 async function importNewTable() {
-  if (!file.value) return
+  if (!file.value || busy.value || !hasHeaders.value) return
+
   busy.value = true
   error.value = ''
+
   try {
     await excelApi.importNewTable(file.value, {
       sheetName: sheetName.value,
@@ -312,6 +334,7 @@ async function importNewTable() {
       name: newTableName.value.trim() || file.value.name.replace(/\.(xlsx|xls)$/i, ''),
       hasHeaders: hasHeaders.value
     })
+
     emit('completed')
     close()
   } catch (err) {
@@ -322,9 +345,11 @@ async function importNewTable() {
 }
 
 async function importExisting() {
-  if (!file.value || !targetTableId.value) return
+  if (!file.value || !targetTableId.value || busy.value) return
+
   busy.value = true
   error.value = ''
+
   try {
     await excelApi.importExisting(Number(targetTableId.value), file.value, {
       sheetName: sheetName.value,
@@ -332,6 +357,7 @@ async function importExisting() {
       hasHeaders: hasHeaders.value,
       mapByHeader: mapByHeader.value
     })
+
     emit('completed')
     close()
   } catch (err) {
@@ -342,12 +368,16 @@ async function importExisting() {
 }
 
 async function exportTable() {
-  if (!targetTableId.value) return
+  if (!targetTableId.value || busy.value) return
+
   busy.value = true
   error.value = ''
+
   try {
     const response = await excelApi.exportTable(Number(targetTableId.value))
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    })
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
@@ -355,7 +385,7 @@ async function exportTable() {
     document.body.appendChild(anchor)
     anchor.click()
     anchor.remove()
-    URL.revokeObjectURL(url)
+    setTimeout(() => URL.revokeObjectURL(url), 0)
   } catch (err) {
     error.value = getError(err, 'Не удалось экспортировать таблицу')
   } finally {
@@ -382,22 +412,36 @@ function sanitizeFileName(value) {
   return String(value).replace(/[\\/:*?"<>|]/g, '_').trim() || 'table'
 }
 
+function handleEscape(event) {
+  if (event.key === 'Escape' && open.value && !busy.value) close()
+}
+
+onMounted(() => window.addEventListener('keydown', handleEscape))
+onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
+
 const PreviewTable = defineComponent({
   name: 'PreviewTable',
   props: { preview: { type: Object, required: true } },
   setup(previewProps) {
     return () => h('div', { class: 'preview-card' }, [
       h('div', { class: 'preview-head' }, [
-        h('div', [h('span', { class: 'excel-eyebrow' }, 'PREVIEW'), h('strong', 'Первые строки Excel')]),
+        h('div', [
+          h('span', { class: 'excel-eyebrow' }, 'PREVIEW'),
+          h('strong', 'Первые строки Excel')
+        ]),
         h('span', `${previewProps.preview.rows?.length || 0} из ${previewProps.preview.rowCount || 0}`)
       ]),
       h('div', { class: 'preview-scroll' }, [
         h('table', { class: 'preview-table' }, [
-          h('thead', [h('tr', (previewProps.preview.headers || []).map((header, index) =>
-            h('th', { key: `${header}-${index}` }, header || `Колонка ${index + 1}`)
-          ))]),
+          h('thead', [
+            h('tr', (previewProps.preview.headers || []).map((header, index) =>
+              h('th', { key: `${header}-${index}` }, header || `Колонка ${index + 1}`)
+            ))
+          ]),
           h('tbody', (previewProps.preview.rows || []).map((row, rowIndex) =>
-            h('tr', { key: rowIndex }, (row || []).map((value, colIndex) => h('td', { key: colIndex, title: String(value ?? '') }, String(value ?? ''))))
+            h('tr', { key: rowIndex }, (row || []).map((value, colIndex) =>
+              h('td', { key: colIndex, title: String(value ?? '') }, String(value ?? ''))
+            ))
           ))
         ])
       ])
@@ -407,18 +451,40 @@ const PreviewTable = defineComponent({
 </script>
 
 <style scoped>
-.excel-backdrop{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.excel-modal{width:min(1080px,100%);max-height:min(900px,calc(100vh - 48px));overflow:auto;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:linear-gradient(180deg,rgba(12,16,25,.98),rgba(5,7,11,.99));box-shadow:0 30px 100px rgba(0,0,0,.7);color:#e5e7eb}
-.excel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px 26px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
-.excel-header h2{margin:3px 0 5px;font-size:22px;line-height:1.15;color:#f8fafc}.excel-header p{margin:0;max-width:720px;color:#7f8ba0;font-size:12px}.excel-eyebrow{color:#64748b;font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.excel-close{width:34px;height:34px;border:1px solid #202938;border-radius:10px;background:#0b0f15;color:#94a3b8;font-size:23px;cursor:pointer}.excel-close:hover{color:#fff;background:#121824}
-.excel-tabs{display:flex;gap:6px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.06);overflow:auto}.excel-tabs button{height:36px;padding:0 14px;border:1px solid transparent;border-radius:10px;background:transparent;color:#8190a5;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}.excel-tabs button:hover{background:#0f141c;color:#dbe4f1}.excel-tabs button.active{background:#121c2d;color:#c7d2fe;border-color:#283858;box-shadow:0 8px 24px rgba(37,99,235,.08)}
-.excel-body{padding:20px 24px 24px}.excel-grid{display:grid;gap:12px}.excel-grid.two{grid-template-columns:1fr 1fr}.field-card{padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(10,14,21,.72)}.field-card>label{display:block;margin-bottom:7px;color:#a8b3c4;font-size:11px;font-weight:700}.field-help{margin-top:6px;color:#586579;font-size:10px}.excel-input{width:100%;height:40px;padding:0 11px;border:1px solid #202938;border-radius:10px;background:#080b10;color:#e5e7eb;outline:none;font-size:12px}.excel-input:focus{border-color:#40517a;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
-.file-drop{display:flex;align-items:center;gap:11px;min-height:64px;padding:10px;border:1px dashed #263247;border-radius:13px;background:#080b10}.file-drop input{display:none}.file-drop.selected{border-color:#36518a;background:#0b1220}.file-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#18233b;color:#93c5fd;font-size:9px;font-weight:900}.file-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}.file-copy strong{overflow:hidden;color:#dbe4f1;font-size:11px;white-space:nowrap;text-overflow:ellipsis}.file-copy span{color:#59677c;font-size:10px}.mini-btn{height:32px;padding:0 10px;border:1px solid #253149;border-radius:9px;background:#101722;color:#cbd5e1;font-size:11px;font-weight:700;cursor:pointer}.mini-btn:hover{background:#162033;color:#fff}
-.switch-row{margin-top:12px;padding:12px 14px;border:1px solid rgba(255,255,255,.06);border-radius:14px;background:#080c12}.switch-row.grouped{display:grid;grid-template-columns:1fr 1fr;gap:12px}.switch-label{display:flex;align-items:flex-start;gap:10px;cursor:pointer}.switch-label input{position:absolute;opacity:0;pointer-events:none}.switch{position:relative;flex:0 0 34px;width:34px;height:20px;margin-top:1px;border-radius:99px;background:#202938;border:1px solid #2b3546;transition:.18s}.switch:after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#69778d;transition:.18s}.switch-label input:checked + .switch{background:#304a8b;border-color:#4965ae}.switch-label input:checked + .switch:after{left:17px;background:#e0e7ff}.switch-label input:disabled + .switch{opacity:.35}.switch-label strong{display:block;color:#dbe4f1;font-size:11px}.switch-label small{display:block;margin-top:2px;color:#59677c;font-size:10px}
-.preview-card{margin-top:14px;border:1px solid rgba(255,255,255,.07);border-radius:15px;overflow:hidden;background:#070a0f}.preview-head,.mapping-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.06)}.preview-head>div{display:flex;align-items:center;gap:9px}.preview-head strong,.mapping-head strong{color:#cbd5e1;font-size:11px}.preview-head>span,.mapping-head>span{color:#586579;font-size:10px}.preview-scroll{max-height:240px;overflow:auto}.preview-table{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0}.preview-table th,.preview-table td{max-width:280px;padding:8px 10px;border-right:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}.preview-table th{position:sticky;top:0;background:#0d131d;color:#8fa0b6;font-weight:800;z-index:2}.preview-table td{color:#b7c2d2}.preview-table tr:hover td{background:#0b1119}
-.mapping-card{margin-top:12px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:#070a0f;overflow:hidden}.mapping-list{display:flex;flex-wrap:wrap;gap:6px;padding:12px}.mapping-pill{padding:5px 8px;border:1px solid #263247;border-radius:8px;background:#0b1119;color:#9fb0c8;font-size:10px}
-.export-hero{display:flex;align-items:flex-start;gap:15px;padding:18px;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:linear-gradient(135deg,rgba(30,64,175,.12),rgba(9,12,18,.8))}.export-icon{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;border:1px solid #29416f;border-radius:13px;background:#0c1730;color:#93c5fd}.export-icon svg{width:23px;height:23px}.export-hero h3{margin:4px 0 5px;color:#f1f5f9;font-size:16px}.export-hero p{margin:0;color:#718096;font-size:11px;line-height:1.6}.export-list{margin-top:12px;border:1px solid rgba(255,255,255,.07);border-radius:15px;overflow:hidden}.export-row{display:flex;justify-content:space-between;gap:20px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.05);font-size:11px}.export-row:last-child{border-bottom:0}.export-row span{color:#59677c}.export-row strong{color:#cbd5e1;font-weight:700}
-.excel-error{margin-top:12px;padding:10px 12px;border:1px solid rgba(244,63,94,.2);border-radius:11px;background:rgba(127,29,29,.18);color:#fda4af;font-size:11px}.excel-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}.excel-footer-info{color:#59677c;font-size:10px}.primary-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 15px;border:1px solid #314c91;border-radius:10px;background:#1c3270;color:#e0e7ff;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(37,99,235,.12)}.primary-btn:hover{background:#24418d}.primary-btn:disabled{opacity:.45;cursor:not-allowed}.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-.excel-modal-enter-active,.excel-modal-leave-active{transition:opacity .16s ease}.excel-modal-enter-active .excel-modal,.excel-modal-leave-active .excel-modal{transition:transform .16s ease}.excel-modal-enter-from,.excel-modal-leave-to{opacity:0}.excel-modal-enter-from .excel-modal,.excel-modal-leave-to .excel-modal{transform:translateY(8px) scale(.985)}
-@media(max-width:760px){.excel-backdrop{padding:10px}.excel-modal{max-height:calc(100vh - 20px);border-radius:18px}.excel-body{padding:14px}.excel-grid.two,.switch-row.grouped{grid-template-columns:1fr}.excel-header{padding:18px}.excel-footer{flex-direction:column-reverse;align-items:stretch}.primary-btn{width:100%}}
+.excel-backdrop{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.32);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.excel-modal{width:min(980px,100%);max-height:min(900px,calc(100vh - 40px));overflow:auto;border:1px solid var(--app-border-strong);border-radius:26px;background:var(--app-surface-strong);color:var(--app-text);box-shadow:var(--app-shadow-lg);}
+.excel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px;border-bottom:1px solid var(--app-border)}
+.excel-eyebrow{display:block;color:var(--app-primary);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.excel-header h2{margin:5px 0 4px;font-size:20px;letter-spacing:-.03em}
+.excel-header p{margin:0;color:var(--app-muted);font-size:12px;line-height:1.5}
+.excel-close{width:36px;height:36px;border-radius:11px;border:1px solid var(--app-border);background:var(--app-control);color:var(--app-muted);font-size:22px;line-height:1;cursor:pointer}
+.excel-close:hover{background:var(--app-control-hover);color:var(--app-text)}
+.excel-tabs{display:flex;gap:5px;padding:10px 24px;border-bottom:1px solid var(--app-border);background:var(--app-bg-soft);overflow:auto}
+.excel-tabs button{min-height:38px;padding:0 13px;border:1px solid transparent;border-radius:11px;background:transparent;color:var(--app-muted);white-space:nowrap;cursor:pointer}
+.excel-tabs button:hover{background:var(--app-hover);color:var(--app-text-soft)}
+.excel-tabs button.active{background:var(--app-active);border-color:var(--app-accent-border);color:var(--app-primary-text)}
+.excel-body{padding:18px 24px 22px}
+.excel-grid{display:grid;gap:12px;margin-bottom:12px}.excel-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.field-card{padding:14px;border:1px solid var(--app-border);border-radius:17px;background:var(--app-control)}
+.field-card>label{display:block;margin-bottom:7px;color:var(--app-text-soft);font-size:10px;font-weight:800}
+.field-help{margin-top:6px;color:var(--app-muted);font-size:9px;line-height:1.45}
+.excel-input{width:100%;height:42px;padding:0 11px;border:1px solid var(--app-border-strong);border-radius:12px;background:var(--app-input-bg);color:var(--app-text);outline:none}
+.excel-input:focus{border-color:var(--app-primary-border);box-shadow:0 0 0 3px var(--app-active)}
+.excel-input::placeholder{color:var(--app-muted)}
+.file-drop{position:relative;display:flex;align-items:center;gap:10px;min-height:65px;padding:10px;border:1px dashed var(--app-border-strong);border-radius:14px;background:var(--app-control-soft)}
+.file-drop.selected{border-color:var(--app-primary-border);background:var(--app-active)}
+.file-drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:var(--app-primary-soft);color:var(--app-primary-text);font-size:10px;font-weight:900}
+.file-copy{min-width:0;flex:1}.file-copy strong,.file-copy span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-copy strong{color:var(--app-text);font-size:11px}.file-copy span{margin-top:2px;color:var(--app-muted);font-size:9px}
+.mini-btn{position:relative;z-index:1;min-height:32px;padding:0 10px;border:1px solid var(--app-border);border-radius:10px;background:var(--app-control);color:var(--app-text-soft);cursor:pointer}
+.mini-btn:hover{background:var(--app-control-hover)}
+.switch-row{padding:12px;border:1px solid var(--app-border);border-radius:15px;background:var(--app-control-soft);margin-bottom:12px}.switch-row.grouped{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.switch-label{display:flex;align-items:center;gap:10px;min-width:0}.switch-label input{position:absolute;opacity:0;pointer-events:none}.switch{position:relative;width:40px;height:22px;flex:0 0 auto;border-radius:999px;background:var(--app-border-strong);border:1px solid var(--app-border);cursor:pointer}.switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--app-highlight);box-shadow:0 1px 3px rgba(0,0,0,.15);transition:.18s}.switch-label input:checked+.switch{background:var(--app-primary);border-color:var(--app-primary)}.switch-label input:checked+.switch::after{transform:translateX(18px);background:#fff}.switch-label input:disabled+.switch{opacity:.5}.switch-label strong,.switch-label small{display:block}.switch-label strong{color:var(--app-text);font-size:10px}.switch-label small{margin-top:2px;color:var(--app-muted);font-size:9px}
+.mapping-card{margin-bottom:12px;padding:14px;border:1px solid var(--app-border);border-radius:17px;background:var(--app-control)}.mapping-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid var(--app-border)}.mapping-head strong{display:block;margin-top:3px;color:var(--app-text);font-size:11px}.mapping-head>span{color:var(--app-muted);font-size:10px}.mapping-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.mapping-pill{padding:5px 8px;border:1px solid var(--app-border);border-radius:999px;background:var(--app-control-soft);color:var(--app-text-soft);font-size:9px}
+.preview-card{margin-bottom:12px;border:1px solid var(--app-border);border-radius:18px;overflow:hidden;background:var(--app-control)}.preview-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--app-border)}.preview-head strong{display:block;margin-top:3px;color:var(--app-text);font-size:11px}.preview-head>span{color:var(--app-muted);font-size:9px}.preview-scroll{max-width:100%;overflow:auto}.preview-table{min-width:600px;width:max-content;border-collapse:separate;border-spacing:0;font-size:9px}.preview-table th,.preview-table td{padding:8px 10px;border-right:1px solid var(--app-border);border-bottom:1px solid var(--app-border);text-align:left;white-space:nowrap}.preview-table th{background:var(--app-bg-soft);color:var(--app-text-soft);font-weight:800}.preview-table td{color:var(--app-text);background:var(--app-control)}.preview-table tbody tr:hover td{background:var(--app-hover)}
+.excel-error{margin-bottom:12px;padding:10px 12px;border:1px solid color-mix(in srgb,#ef4444 22%,var(--app-border));border-radius:12px;background:color-mix(in srgb,#ef4444 8%,var(--app-control));color:var(--app-danger);font-size:10px}
+.excel-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--app-border)}.excel-footer-info{color:var(--app-muted);font-size:10px}.primary-btn{min-height:38px;padding:0 13px;border:1px solid var(--app-primary-border);border-radius:12px;background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));color:#fff;cursor:pointer;box-shadow:0 8px 20px color-mix(in srgb,var(--app-primary) 18%,transparent)}.primary-btn:hover:not(:disabled){transform:translateY(-1px)}.primary-btn:disabled{opacity:.5;cursor:not-allowed}.spinner{display:inline-block;width:13px;height:13px;margin-right:7px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;vertical-align:-2px;animation:spin .8s linear infinite}
+.export-hero{display:flex;align-items:flex-start;gap:13px;padding:16px;border:1px solid var(--app-border);border-radius:18px;background:var(--app-primary-soft);margin-bottom:12px}.export-icon{width:44px;height:44px;display:grid;place-items:center;flex:0 0 auto;border-radius:13px;background:var(--app-control);color:var(--app-primary)}.export-icon svg{width:21px;height:21px}.export-hero h3{margin:4px 0 4px;color:var(--app-text);font-size:16px}.export-hero p{margin:0;color:var(--app-muted);font-size:10px;line-height:1.5}.export-list{display:grid;gap:6px;margin-bottom:12px}.export-row{display:flex;justify-content:space-between;gap:12px;padding:9px 11px;border:1px solid var(--app-border);border-radius:12px;background:var(--app-control-soft)}.export-row span{color:var(--app-muted);font-size:10px}.export-row strong{color:var(--app-text);font-size:10px;text-align:right}
+.excel-modal-enter-active,.excel-modal-leave-active{transition:opacity .18s ease}.excel-modal-enter-active .excel-modal,.excel-modal-leave-active .excel-modal{transition:transform .18s ease,opacity .18s ease}.excel-modal-enter-from,.excel-modal-leave-to{opacity:0}.excel-modal-enter-from .excel-modal,.excel-modal-leave-to .excel-modal{opacity:0;transform:translateY(8px) scale(.985)}
+@media(max-width:760px){.excel-body{padding:14px}.excel-header{padding:18px}.excel-tabs{padding-inline:14px}.excel-grid.two,.switch-row.grouped{grid-template-columns:1fr}.excel-footer{align-items:stretch;flex-direction:column}.primary-btn{width:100%}}
 </style>
