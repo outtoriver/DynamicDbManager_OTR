@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="dynamicdbmanager.client/dynamicdbmanager.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="DynamicDbManager.Server/DynamicDbManager.Server.csproj" />
+</Solution>

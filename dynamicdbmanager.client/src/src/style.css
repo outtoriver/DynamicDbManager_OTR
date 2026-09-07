@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --app-bg: #070a12;
+  --app-bg-soft: #0b1020;
+  --app-surface: rgba(15, 20, 34, 0.48);
+  --app-surface-strong: rgba(18, 24, 42, 0.68);
+  --app-menu-bg: rgba(8, 12, 21, 0.72);
+  --app-control-bg: rgba(9, 13, 23, 0.34);
+  --app-control-hover: rgba(18, 24, 38, 0.50);
+  --app-control-soft: rgba(255,255,255,.045);
+  --app-hover: rgba(255,255,255,.045);
+  --app-active: rgba(115,133,255,.10);
+  --app-border: rgba(255, 255, 255, 0.10);
+  --app-border-strong: rgba(255, 255, 255, 0.15);
+  --app-highlight: rgba(255,255,255,.07);
+  --app-text: #f5f7ff;
+  --app-muted: #96a0b5;
+  --app-primary: #7385ff;
+  --app-primary-2: #8d6cff;
+  --app-primary-border: rgba(115,133,255,.28);
+  --app-cyan: #45c9ff;
+  --app-danger: #ff6f91;
+  --app-success: #52d7a7;
+  --app-shadow: 0 24px 80px rgba(0, 0, 0, .24);
+  --app-shadow-strong: 0 24px 60px rgba(0, 0, 0, .38);
+  --app-header-bg: rgba(7, 10, 18, .34);
+  --app-header-border: rgba(255,255,255,.10);
+  --app-input-bg: rgba(8, 12, 22, .34);
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --app-bg: #edf3fb;
+  --app-bg-soft: #e7edf7;
+  --app-surface: rgba(255,255,255,.47);
+  --app-surface-strong: rgba(255,255,255,.67);
+  --app-menu-bg: rgba(248,251,255,.76);
+  --app-control-bg: rgba(255,255,255,.38);
+  --app-control-hover: rgba(255,255,255,.62);
+  --app-control-soft: rgba(37,99,235,.055);
+  --app-hover: rgba(15,23,42,.045);
+  --app-active: rgba(79,70,229,.08);
+  --app-border: rgba(15,23,42,.09);
+  --app-border-strong: rgba(15,23,42,.14);
+  --app-highlight: rgba(255,255,255,.78);
+  --app-text: #172033;
+  --app-muted: #667085;
+  --app-primary: #4f46e5;
+  --app-primary-2: #7c3aed;
+  --app-primary-border: rgba(79,70,229,.20);
+  --app-cyan: #0891b2;
+  --app-danger: #e25578;
+  --app-success: #079669;
+  --app-shadow: 0 24px 80px rgba(53, 76, 110, .16);
+  --app-shadow-strong: 0 24px 60px rgba(53, 76, 110, .22);
+  --app-header-bg: rgba(255,255,255,.30);
+  --app-header-border: rgba(15,23,42,.10);
+  --app-input-bg: rgba(255,255,255,.38);
+}
+
+*, :before, :after { box-sizing: border-box; }
+html, body, #app { width:100%; min-width:100%; min-height:100%; margin:0; padding:0; }
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--app-primary) 14%, transparent), transparent 28%),
+    radial-gradient(circle at 90% 85%, color-mix(in srgb, var(--app-primary-2) 10%, transparent), transparent 26%),
+    var(--app-bg);
+  color: var(--app-text);
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size:14px;
+  line-height:1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color .28s ease, color .22s ease;
+}
+
+button,input,select,textarea { font:inherit; }
+button,a,input,select,textarea { -webkit-tap-highlight-color:transparent; }
+a { color:inherit; text-decoration:none; }
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible { outline:2px solid color-mix(in srgb, var(--app-primary) 78%, transparent); outline-offset:2px; }
+::selection { background: color-mix(in srgb, var(--app-primary) 32%, transparent); color: var(--app-text); }
+
+.glass-card,.glass-panel {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--app-surface-strong) 94%, transparent), color-mix(in srgb, var(--app-surface) 92%, transparent));
+  border:1px solid var(--app-border);
+  box-shadow:var(--app-shadow), inset 0 1px 0 var(--app-highlight);
+  backdrop-filter:blur(24px) saturate(140%);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  color:var(--app-text);
+}
+.glass-card { border-radius:26px; padding:1.5rem; }
+
+.glass-input {
+  width:100%;
+  border:1px solid var(--app-border);
+  background:var(--app-input-bg);
+  color:var(--app-text);
+  border-radius:14px;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.glass-input::placeholder { color:var(--app-muted); opacity:.76; }
+.glass-input:hover { border-color:var(--app-border-strong); }
+.glass-input:focus {
+  border-color:color-mix(in srgb, var(--app-primary) 64%, transparent);
+  background:var(--app-surface-strong);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--app-primary) 10%, transparent),0 8px 30px rgba(0,0,0,.10);
+  outline:none;
+}
+
+.glass-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.55rem;
+  min-height:40px; padding:.65rem .9rem; border-radius:13px;
+  border:1px solid var(--app-border); color:var(--app-text); background:var(--app-control-soft);
+  transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.glass-btn:hover { background:var(--app-hover); border-color:var(--app-border-strong); transform:translateY(-1px); }
+.glass-btn:active { transform:scale(.98); }
+.glass-btn.primary { color:#fff; border-color:color-mix(in srgb, var(--app-primary) 34%, transparent); background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2)); box-shadow:0 12px 35px color-mix(in srgb, var(--app-primary) 20%, transparent); }
+.glass-btn.danger { color:var(--app-danger); background:color-mix(in srgb, var(--app-danger) 7%, transparent); border-color:color-mix(in srgb, var(--app-danger) 14%, transparent); }
+.glass-chip { display:inline-flex; align-items:center; gap:.4rem; min-height:30px; padding:0 .65rem; border-radius:999px; border:1px solid var(--app-border); background:var(--app-control-soft); color:var(--app-muted); }
+.page-scroll { scrollbar-width:thin; scrollbar-color:color-mix(in srgb, var(--app-text) 14%, transparent) transparent; }
+.page-scroll::-webkit-scrollbar,.slim-scroll::-webkit-scrollbar { width:8px; height:8px; }
+.page-scroll::-webkit-scrollbar-thumb,.slim-scroll::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--app-text) 14%, transparent); border-radius:999px; }
+.page-scroll::-webkit-scrollbar-track,.slim-scroll::-webkit-scrollbar-track { background:transparent; }
+
+@media (max-width:720px) { .glass-card { border-radius:20px; } }
+
+.fade-enter-active,.fade-leave-active,.modal-fade-enter-active,.modal-fade-leave-active,.toast-enter-active,.toast-leave-active { transition:opacity .22s ease,transform .22s ease; }
+.fade-enter-from,.fade-leave-to,.toast-enter-from,.toast-leave-to { opacity:0; transform:translateY(8px); }
+.modal-fade-enter-from,.modal-fade-leave-to { opacity:0; transform:scale(.985); }
+
+@import "./styles/admin-theme-overrides.css";
