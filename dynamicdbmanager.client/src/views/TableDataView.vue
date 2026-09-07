@@ -76,20 +76,21 @@
         <table v-else class="data-table">
           <thead>
             <tr>
-              <th v-for="col in selectedTable.tableColumns" :key="col.name">
+              <th v-for="col in visibleColumns" :key="col.name" :style="getColumnStyle(col)" class="data-column-head" :class="{'is-resizing': columnResize.active && columnResize.name === col.name}" @contextmenu.prevent.stop="openColumnMenu($event, col)">
                 <button type="button" @click="sortBy(col.name)">
                   <span>{{ col.name }}</span>
-                  <span v-if="sortColumn===col.name" style="margin-left:6px;color:#a5b4fc">{{ sortDirection==='asc' ? '↑' : '↓' }}</span>
+                  <span v-if="sortColumn===col.name" class="sort-indicator">{{ sortDirection==='asc' ? '↑' : '↓' }}</span>
                 </button>
+                <span class="column-resizer" title="Изменить ширину" @pointerdown.stop.prevent="startColumnResize($event, col)" @dblclick.stop.prevent="autoFitColumn(col)"></span>
               </th>
-              <th class="actions-col"><span class="actions-head-label">Действия</span></th>
+              <th class="actions-col"><button type="button">Действия</button></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in paginatedRows" :key="row.id" @dblclick="editRow(row)">
-              <td v-for="col in selectedTable.tableColumns" :key="col.name">
+              <td v-for="col in visibleColumns" :key="col.name" :style="getColumnStyle(col)" :class="{'is-wrapped': isColumnWrapped(col.name)}">
                 <span v-if="col.type==='boolean'" class="bool-cell" :class="getCellValue(row,col.name)===true ? 'on' : 'off'">{{ getCellValue(row,col.name)===true ? '✓' : '—' }}</span>
-                <span v-else class="cell-text" :title="String(getCellValue(row,col.name))">{{ getCellValue(row,col.name) }}</span>
+                <span v-else class="cell-text" :class="{'cell-text-wrap': isColumnWrapped(col.name)}" :title="String(getCellValue(row,col.name))">{{ getCellValue(row,col.name) }}</span>
               </td>
               <td class="actions-col">
                 <div class="row-actions">
@@ -102,10 +103,8 @@
         </table>
       </div>
       <div v-if="selectedTable" class="statusbar">
-        <span class="status-summary">{{ rowsLoading ? 'Обновление…' : `Показано ${paginatedRows.length} из ${totalRows}` }}</span>
-        <div class="pagination-shell">
-          <Pagination :current="currentPage" :total="totalRows" :page-size="pageSize" @change="changePage" @update:pageSize="(val)=>{ pageSize=val; changePage(1) }" />
-        </div>
+        <span>{{ rowsLoading ? 'Обновление…' : `Показано ${paginatedRows.length} из ${totalRows}` }}</span>
+        <Pagination :current="currentPage" :total="totalRows" :page-size="pageSize" @change="changePage" @update:pageSize="(val)=>{ pageSize=val; changePage(1) }" />
       </div>
     </section>
 
@@ -173,6 +172,22 @@
         </div>
       </Transition>
     </Teleport>
+    <Teleport to="body">
+      <Transition name="column-menu-fade">
+        <div v-if="columnMenu.open" class="column-menu-backdrop" @click="closeColumnMenu" @contextmenu.prevent="closeColumnMenu">
+          <div class="column-context-menu" :style="{ left: `${columnMenu.x}px`, top: `${columnMenu.y}px` }" @click.stop>
+            <div class="column-menu-title"><span>Колонка</span><strong>{{ columnMenu.column?.name }}</strong></div>
+            <button type="button" class="column-menu-item" @click="autoFitColumn(columnMenu.column); closeColumnMenu()"><span class="menu-icon">↔</span><span><b>Автоподбор ширины</b><small>По заголовку и данным</small></span></button>
+            <button type="button" class="column-menu-item" @click="promptColumnWidth(columnMenu.column); closeColumnMenu()"><span class="menu-icon">↔</span><span><b>Задать ширину</b><small>{{ getColumnWidth(columnMenu.column) }} px</small></span></button>
+            <button type="button" class="column-menu-item" @click="toggleColumnWrap(columnMenu.column); closeColumnMenu()"><span class="menu-icon">↕</span><span><b>{{ isColumnWrapped(columnMenu.column?.name) ? 'Отключить перенос' : 'Переносить текст' }}</b><small>Показывать длинный текст в ячейке</small></span></button>
+            <div class="column-menu-separator"></div>
+            <button type="button" class="column-menu-item" @click="hideColumn(columnMenu.column); closeColumnMenu()"><span class="menu-icon">◧</span><span><b>Скрыть колонку</b><small>Настройка останется сохранённой</small></span></button>
+            <button type="button" class="column-menu-item" @click="resetColumn(columnMenu.column); closeColumnMenu()"><span class="menu-icon">↺</span><span><b>Сбросить настройки</b><small>Стандартная ширина и перенос</small></span></button>
+            <button v-if="hiddenColumnNames.length" type="button" class="column-menu-item" @click="showAllColumns(); closeColumnMenu()"><span class="menu-icon">⊞</span><span><b>Показать скрытые</b><small>{{ hiddenColumnNames.length }} скрытых колонок</small></span></button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -215,6 +230,16 @@ const excelTransferOpen = ref(false)
 // Пагинация
 const currentPage = ref(1)
 const pageSize = ref(100)
+
+// Настройки колонок таблицы. table.css не изменяется — вся механика изолирована здесь.
+const columnPreferences = ref({ widths: {}, hidden: [], wrapped: {} })
+const columnMenu = ref({ open: false, x: 0, y: 0, column: null })
+const columnResize = ref({ active: false, name: null, startX: 0, startWidth: 0 })
+const columnResizeCleanup = ref(null)
+const COLUMN_PREF_PREFIX = 'dynamicDbManager.tableColumns.'
+const COLUMN_MIN_WIDTH = 90
+const COLUMN_MAX_WIDTH = 760
+const COLUMN_DEFAULT_WIDTH = 180
 
 // Вложения
 const attachmentsList = ref([])
@@ -285,6 +310,170 @@ function cancelTabEdit() {
     editingTabName.value = ''
 }
 
+// -------------------- Настройки и resize колонок --------------------
+const visibleColumns = computed(() => {
+    if (!selectedTable.value?.tableColumns) return []
+    const hidden = new Set(columnPreferences.value.hidden || [])
+    return selectedTable.value.tableColumns.filter(col => !hidden.has(col.name))
+})
+
+const hiddenColumnNames = computed(() => columnPreferences.value.hidden || [])
+
+function columnStorageKey(tableId) {
+    return `${COLUMN_PREF_PREFIX}${tableId}`
+}
+
+function loadColumnPreferences(tableId) {
+    const defaults = { widths: {}, hidden: [], wrapped: {} }
+    try {
+      const raw = localStorage.getItem(columnStorageKey(tableId))
+      if (!raw) { columnPreferences.value = defaults; return }
+      const parsed = JSON.parse(raw)
+      columnPreferences.value = {
+        widths: parsed?.widths && typeof parsed.widths === 'object' ? parsed.widths : {},
+        hidden: Array.isArray(parsed?.hidden) ? parsed.hidden : [],
+        wrapped: parsed?.wrapped && typeof parsed.wrapped === 'object' ? parsed.wrapped : {}
+      }
+    } catch {
+      columnPreferences.value = defaults
+    }
+}
+
+function persistColumnPreferences() {
+    if (!selectedTable.value?.id) return
+    try { localStorage.setItem(columnStorageKey(selectedTable.value.id), JSON.stringify(columnPreferences.value)) }
+    catch (err) { console.warn('Не удалось сохранить настройки колонок:', err) }
+}
+
+function clampColumnWidth(value) {
+    const number = Number(value)
+    if (!Number.isFinite(number)) return COLUMN_DEFAULT_WIDTH
+    return Math.min(COLUMN_MAX_WIDTH, Math.max(COLUMN_MIN_WIDTH, Math.round(number)))
+}
+
+function getColumnWidth(col) {
+    if (!col?.name) return COLUMN_DEFAULT_WIDTH
+    return clampColumnWidth(columnPreferences.value.widths?.[col.name] ?? COLUMN_DEFAULT_WIDTH)
+}
+
+function getColumnStyle(col) {
+    const width = getColumnWidth(col)
+    return { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` }
+}
+
+function isColumnWrapped(name) {
+    return !!(name && columnPreferences.value.wrapped?.[name])
+}
+
+function openColumnMenu(event, col) {
+    const menuWidth = 300, menuHeight = 350, gap = 6
+    let x = event.clientX + gap, y = event.clientY + gap
+    if (x + menuWidth > window.innerWidth - 8) x = Math.max(8, window.innerWidth - menuWidth - 8)
+    if (y + menuHeight > window.innerHeight - 8) y = Math.max(8, window.innerHeight - menuHeight - 8)
+    columnMenu.value = { open: true, x, y, column: col }
+}
+
+function closeColumnMenu() {
+    columnMenu.value.open = false
+    columnMenu.value.column = null
+}
+
+function onColumnMenuDocumentPointerDown(event) {
+    if (!columnMenu.value.open) return
+    const target = event.target
+    if (target instanceof Element && target.closest('.column-context-menu')) return
+    closeColumnMenu()
+}
+
+function onColumnMenuKeydown(event) {
+    if (event.key === 'Escape' && columnMenu.value.open) closeColumnMenu()
+}
+
+function startColumnResize(event, col) {
+    if (!col?.name) return
+    closeColumnMenu()
+    const startWidth = getColumnWidth(col)
+    columnResize.value = { active: true, name: col.name, startX: event.clientX, startWidth }
+    document.body.classList.add('column-resizing')
+    const move = moveEvent => {
+      columnPreferences.value.widths[col.name] = clampColumnWidth(startWidth + moveEvent.clientX - event.clientX)
+    }
+    const stop = () => {
+      persistColumnPreferences()
+      columnResize.value = { active: false, name: null, startX: 0, startWidth: 0 }
+      document.body.classList.remove('column-resizing')
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', stop)
+      window.removeEventListener('pointercancel', stop)
+      columnResizeCleanup.value = null
+    }
+    columnResizeCleanup.value = stop
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', stop)
+    window.addEventListener('pointercancel', stop)
+}
+
+function autoFitColumn(col) {
+    if (!col?.name) return
+    nextTick(() => {
+      const table = document.querySelector('.data-table')
+      if (!table) return
+      const visibleIndex = visibleColumns.value.findIndex(item => item.name === col.name)
+      if (visibleIndex < 0) return
+      const header = table.querySelectorAll('thead th')[visibleIndex]
+      const cells = Array.from(table.querySelectorAll('tbody tr')).slice(0, 80).map(row => row.children[visibleIndex]).filter(Boolean)
+      const samples = [col.name, ...cells.map(cell => cell.textContent?.trim() || '').filter(Boolean)]
+      const source = header || cells[0] || table
+      const style = getComputedStyle(source)
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+      const extra = sortColumn.value === col.name ? 46 : 32
+      const measured = Math.max(...samples.map(value => ctx.measureText(value).width + extra))
+      columnPreferences.value.widths[col.name] = clampColumnWidth(measured)
+      persistColumnPreferences()
+    })
+}
+
+function promptColumnWidth(col) {
+    if (!col?.name) return
+    const value = window.prompt(`Ширина «${col.name}» в пикселях (${COLUMN_MIN_WIDTH}–${COLUMN_MAX_WIDTH}):`, String(getColumnWidth(col)))
+    if (value === null) return
+    columnPreferences.value.widths[col.name] = clampColumnWidth(value)
+    persistColumnPreferences()
+}
+
+function toggleColumnWrap(col) {
+    if (!col?.name) return
+    columnPreferences.value.wrapped[col.name] = !isColumnWrapped(col.name)
+    persistColumnPreferences()
+}
+
+function hideColumn(col) {
+    if (!col?.name) return
+    const hidden = new Set(columnPreferences.value.hidden || [])
+    hidden.add(col.name)
+    if (hidden.size >= (selectedTable.value?.tableColumns?.length || 0)) {
+      window.alert('Нельзя скрыть все колонки таблицы.')
+      return
+    }
+    columnPreferences.value.hidden = Array.from(hidden)
+    persistColumnPreferences()
+}
+
+function showAllColumns() { columnPreferences.value.hidden = []; persistColumnPreferences() }
+
+function resetColumn(col) {
+    if (!col?.name) return
+    delete columnPreferences.value.widths[col.name]
+    delete columnPreferences.value.wrapped[col.name]
+    const hidden = new Set(columnPreferences.value.hidden || [])
+    hidden.delete(col.name)
+    columnPreferences.value.hidden = Array.from(hidden)
+    persistColumnPreferences()
+}
+
 // -------------------- Загрузка данных --------------------
 async function loadRows() {
     if (!selectedTable.value) return
@@ -333,6 +522,7 @@ async function loadRows() {
 async function selectTable(table) {
     if (!table) return
     selectedTable.value = table
+    loadColumnPreferences(table.id)
     ensureSelectedTableColumns()
     searchQuery.value = ''
     globalSearchEnabled.value = false
@@ -753,10 +943,17 @@ onBeforeUnmount(() => {
       rowsRequestController.abort()
       rowsRequestController = null
     }
+    closeColumnMenu()
+    document.removeEventListener('pointerdown', onColumnMenuDocumentPointerDown, true)
+    document.removeEventListener('keydown', onColumnMenuKeydown)
+    if (columnResizeCleanup.value) columnResizeCleanup.value()
+    document.body.classList.remove('column-resizing')
 })
 
 // -------------------- Инициализация --------------------
 onMounted(async () => {
+    document.addEventListener('pointerdown', onColumnMenuDocumentPointerDown, true)
+    document.addEventListener('keydown', onColumnMenuKeydown)
     if (!tablesStore.loaded) {
       await tablesStore.loadTables()
     }
@@ -794,314 +991,22 @@ watch(() => route.params.id, async (newId) => {
 @media(max-width:900px){.form-grid{grid-template-columns:1fr}.toolbar-note{width:100%;margin-left:0}.table-title{font-size:18px}}
 @media(max-width:640px){.table-page{padding:8px}.table-header{align-items:flex-start}.table-subtitle{display:none}.toolbar{padding:8px}.search-box{min-width:100%}.toolbar-btn{flex:1}.toolbar-btn.excel{background:#0f251d;border-color:#1c533a;color:#86efac}.toolbar-btn.excel:hover{background:#123125;color:#bbf7d0}.toolbar-btn.primary{flex:1.2}.statusbar{flex-direction:column;align-items:flex-start}.data-table td{min-width:130px}}
 
+/* Row actions: compact icon by default, label appears on hover — matches the previous UX. */
+.data-table .actions-col .row-actions{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;}
+.data-table .actions-col .row-action{width:34px;min-width:34px;height:32px;padding:0 7px;border:1px solid var(--app-border,rgba(255,255,255,.08));border-radius:9px;background:var(--app-surface-soft,rgba(255,255,255,.03));color:var(--app-muted,#94a3b8);display:inline-flex;align-items:center;justify-content:center;gap:7px;overflow:hidden;white-space:nowrap;cursor:pointer;transition:width .18s ease, min-width .18s ease, background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;box-sizing:border-box;}
+.data-table .actions-col .row-action svg{width:16px;height:16px;flex:0 0 16px;transition:transform .18s ease;}
+.data-table .actions-col .row-action span{display:block;max-width:0;opacity:0;overflow:hidden;font-size:11px;font-weight:600;line-height:1;transition:max-width .18s ease, opacity .14s ease;}
+.data-table .actions-col .row-action:hover,.data-table .actions-col .row-action:focus-visible{width:104px;min-width:104px;color:var(--app-text,#e5e7eb);background:var(--app-surface-strong,rgba(99,102,241,.12));border-color:var(--app-primary,#6366f1);transform:translateY(-1px);outline:none;}
+.data-table .actions-col .row-action:hover span,.data-table .actions-col .row-action:focus-visible span{max-width:72px;opacity:1;}
+.data-table .actions-col .row-action:hover svg,.data-table .actions-col .row-action:focus-visible svg{transform:scale(1.03);}
+.data-table .actions-col .row-action.danger:hover,.data-table .actions-col .row-action.danger:focus-visible{color:var(--app-danger,#ef4444);background:color-mix(in srgb,var(--app-danger,#ef4444) 10%,transparent);border-color:color-mix(in srgb,var(--app-danger,#ef4444) 28%,transparent);}
+@media(max-width:900px){.data-table .actions-col .row-action:hover,.data-table .actions-col .row-action:focus-visible{width:96px;min-width:96px;}.data-table .actions-col .row-action:hover span,.data-table .actions-col .row-action:focus-visible span{max-width:64px;}}
+@media(max-width:640px){.data-table .actions-col .row-actions{gap:4px}.data-table .actions-col .row-action{width:32px;min-width:32px;height:30px}.data-table .actions-col .row-action:hover,.data-table .actions-col .row-action:focus-visible{width:88px;min-width:88px;}.data-table .actions-col .row-action span{font-size:10px;}}
 
-/* ============================================================
-   Modern table workspace / Day + Night unified skin
-   ============================================================ */
-
-.table-page{
-  --table-bg:var(--app-surface-strong);
-  --table-head-bg:var(--app-control);
-  --table-head-text:var(--app-text);
-  --table-head-muted:var(--app-muted);
-  --table-row-bg:var(--app-surface-strong);
-  --table-row-alt:var(--app-control-soft);
-  --table-row-hover:var(--app-hover);
-  --table-cell-text:var(--app-text-soft);
-  --table-border:var(--app-border);
-  --table-scroll-track:transparent;
-  --table-scroll-thumb:color-mix(in srgb,var(--app-text) 18%,transparent);
-  --table-action-bg:var(--app-control-soft);
-  --table-action-hover:var(--app-active);
-  --table-action-text:var(--app-muted);
-  --table-footer-bg:color-mix(in srgb,var(--app-surface-strong) 94%,var(--app-bg));
-  --table-footer-text:var(--app-muted);
-  --table-footer-border:var(--app-border);
-  --table-tab-bg:var(--app-control-soft);
-  --table-tab-text:var(--app-muted);
-  --table-tab-hover:var(--app-hover);
-  color:var(--app-text);
-}
-
-html[data-theme="light"] .table-page{
-  --table-bg:#fff;
-  --table-head-bg:#f8fafc;
-  --table-head-text:#172033;
-  --table-head-muted:#64748b;
-  --table-row-bg:#fff;
-  --table-row-alt:#fbfcfe;
-  --table-row-hover:#f3f6fb;
-  --table-cell-text:#334155;
-  --table-border:#e2e8f0;
-  --table-scroll-thumb:#cbd5e1;
-  --table-action-bg:#f8fafc;
-  --table-action-hover:#eef2ff;
-  --table-action-text:#64748b;
-  --table-footer-bg:#fff;
-  --table-footer-text:#64748b;
-  --table-footer-border:#e2e8f0;
-  --table-tab-bg:#f8fafc;
-  --table-tab-text:#64748b;
-  --table-tab-hover:#eef2f7;
-}
-
-.table-page .tabs-panel,
-.table-page .toolbar,
-.table-page .data-panel,
-.table-page .search-results{
-  border-color:var(--app-border);
-  color:var(--app-text);
-}
-
-.table-page .tabs-panel{
-  background:var(--app-surface);
-  box-shadow:var(--app-shadow),inset 0 1px 0 var(--app-highlight);
-}
-
-.table-page .tabs-scroll{
-  scrollbar-width:thin;
-  scrollbar-color:var(--table-scroll-thumb) transparent;
-}
-.table-page .tabs-scroll::-webkit-scrollbar{height:7px}
-.table-page .tabs-scroll::-webkit-scrollbar-track{background:transparent}
-.table-page .tabs-scroll::-webkit-scrollbar-thumb{background:var(--table-scroll-thumb);border-radius:999px}
-
-.table-page .tab{
-  color:var(--table-tab-text);
-  background:var(--table-tab-bg);
-  border:1px solid var(--app-border);
-  box-shadow:inset 0 1px 0 var(--app-highlight);
-}
-.table-page .tab:hover{
-  color:var(--app-text);
-  background:var(--table-tab-hover);
-  border-color:var(--app-border-strong);
-}
-.table-page .tab.active{
-  color:var(--app-primary-text);
-  background:linear-gradient(135deg,var(--app-primary-soft-strong),var(--app-primary-soft));
-  border-color:var(--app-accent-border);
-  box-shadow:0 8px 22px color-mix(in srgb,var(--app-primary) 12%,transparent),inset 0 1px 0 var(--app-highlight);
-}
-html[data-theme="light"] .table-page .tab.active{
-  color:#3730a3;
-  background:linear-gradient(135deg,#eef2ff,#e8edff);
-}
-.table-page .tab-arrow{
-  color:var(--app-text-soft);
-  background:var(--app-control);
-  border-color:var(--app-border);
-}
-.table-page .tab-arrow:hover{
-  color:var(--app-text);
-  background:var(--app-control-hover);
-  border-color:var(--app-border-strong);
-}
-
-.table-page .toolbar{
-  background:var(--app-surface);
-  box-shadow:var(--app-shadow),inset 0 1px 0 var(--app-highlight);
-}
-.table-page .search-box input,
-.table-page .toolbar-btn,
-.table-page .scope-toggle{
-  border-color:var(--app-border);
-  background:var(--app-control);
-  color:var(--app-text);
-}
-.table-page .search-box input::placeholder{color:var(--app-muted)}
-.table-page .search-box input:focus{
-  background:var(--app-control-hover);
-  border-color:var(--app-primary-border);
-}
-.table-page .search-box svg{color:var(--app-muted)}
-.table-page .search-clear{color:var(--app-muted)}
-.table-page .search-clear:hover{background:var(--app-hover);color:var(--app-text)}
-.table-page .toolbar-btn:hover,
-.table-page .scope-toggle:hover{
-  background:var(--app-control-hover);
-  border-color:var(--app-border-strong);
-  color:var(--app-text);
-}
-.table-page .toolbar-btn.active,
-.table-page .scope-toggle.active{
-  background:var(--app-active);
-  border-color:var(--app-accent-border);
-  color:var(--app-primary-text);
-}
-.table-page .toolbar-btn.primary{
-  color:#fff;
-  background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));
-  border-color:var(--app-primary-border);
-  box-shadow:0 8px 22px color-mix(in srgb,var(--app-primary) 18%,transparent);
-}
-.table-page .toolbar-btn.danger{
-  color:var(--app-danger);
-  background:var(--app-danger-soft);
-  border-color:var(--app-danger-border);
-}
-.table-page .toolbar-note{color:var(--app-muted)}
-
-.table-page .data-panel{background:var(--table-bg)}
-.table-page .data-head{background:var(--table-bg);border-color:var(--table-border)}
-.table-page .data-head strong{color:var(--app-text)}
-.table-page .sort-hint{color:var(--app-muted)}
-
-.table-page .table-scroll{
-  background:var(--table-bg);
-  scrollbar-width:thin;
-  scrollbar-color:var(--table-scroll-thumb) var(--table-scroll-track);
-}
-.table-page .table-scroll::-webkit-scrollbar{width:11px;height:11px}
-.table-page .table-scroll::-webkit-scrollbar-track{background:var(--table-scroll-track)}
-.table-page .table-scroll::-webkit-scrollbar-thumb{background:var(--table-scroll-thumb);border:3px solid var(--table-bg);border-radius:999px}
-.table-page .table-scroll::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--app-text) 30%,transparent)}
-
-.table-page .data-table{color:var(--table-cell-text)}
-.table-page .data-table th{
-  background:var(--table-head-bg);
-  color:var(--table-head-muted);
-  border-bottom-color:var(--table-border);
-  border-right-color:var(--table-border);
-}
-.table-page .data-table th>button{
-  color:var(--table-head-text);
-}
-.table-page .data-table th>button:hover{
-  background:var(--app-hover);
-  color:var(--app-text);
-}
-.table-page .data-table td{
-  color:var(--table-cell-text);
-  border-bottom-color:var(--table-border);
-  border-right-color:var(--table-border);
-  background:var(--table-row-bg);
-}
-.table-page .data-table tbody tr:nth-child(even) td{background:var(--table-row-alt)}
-.table-page .data-table tbody tr:hover td{background:var(--table-row-hover)}
-.table-page .data-table .actions-col{
-  background:var(--table-head-bg);
-  box-shadow:-10px 0 18px color-mix(in srgb,var(--app-text) 5%,transparent);
-}
-.table-page .data-table tbody .actions-col{
-  background:inherit;
-}
-.table-page .actions-head-label{color:var(--table-head-text)}
-.table-page .cell-text{color:inherit}
-
-.table-page .bool-cell.on{background:color-mix(in srgb,var(--app-success) 14%,transparent);color:var(--app-success)}
-.table-page .bool-cell.off{background:color-mix(in srgb,var(--app-muted) 10%,transparent);color:var(--app-muted)}
-
-.table-page .row-actions{
-  gap:4px;
-  padding:3px;
-  border:1px solid var(--app-border);
-  border-radius:11px;
-  background:var(--table-action-bg);
-  box-shadow:inset 0 1px 0 var(--app-highlight);
-}
-.table-page .row-action{
-  width:31px;
-  height:31px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  overflow:hidden;
-  border:1px solid transparent;
-  border-radius:8px;
-  background:transparent;
-  color:var(--table-action-text);
-  cursor:pointer;
-  transition:width .16s ease,background .16s ease,color .16s ease,border-color .16s ease,transform .16s ease;
-}
-.table-page .row-action svg{width:15px;height:15px;flex:none}
-.table-page .row-action span{font-size:10px;font-weight:650;white-space:nowrap;max-width:0;opacity:0;transition:max-width .16s ease,opacity .16s ease}
-.table-page .row-action:hover{
-  width:88px;
-  background:var(--table-action-hover);
-  color:var(--app-primary);
-  border-color:var(--app-accent-border);
-  transform:translateY(-1px);
-}
-.table-page .row-action:hover span{max-width:58px;opacity:1}
-.table-page .row-action.danger:hover{
-  background:var(--app-danger-soft);
-  color:var(--app-danger);
-  border-color:var(--app-danger-border);
-}
-
-.table-page .statusbar{
-  background:var(--table-footer-bg);
-  color:var(--table-footer-text);
-  border-top:1px solid var(--table-footer-border);
-  min-height:56px;
-  padding:9px 13px;
-}
-.table-page .status-summary{color:var(--table-footer-text)}
-.table-page .pagination-shell{display:flex;align-items:center;gap:8px}
-.table-page .statusbar .page-btn{
-  border-color:var(--app-border);
-  background:var(--app-control);
-  color:var(--app-text-soft);
-}
-.table-page .statusbar .page-btn:hover:not(:disabled){
-  background:var(--app-control-hover);
-  border-color:var(--app-border-strong);
-  color:var(--app-text);
-}
-.table-page .statusbar .page-btn.active{
-  color:#fff;
-  background:linear-gradient(135deg,var(--app-primary),var(--app-primary-2));
-  border-color:var(--app-primary-border);
-}
-.table-page .statusbar .page-size select{
-  color:var(--app-text);
-  background:var(--app-control);
-  border-color:var(--app-border);
-}
-.table-page .statusbar .page-size span{color:var(--app-muted)}
-
-.table-page .modal-backdrop{background:color-mix(in srgb,var(--app-bg) 72%,transparent)}
-.table-page .modal-card{
-  background:var(--app-surface-strong);
-  color:var(--app-text);
-  border-color:var(--app-border-strong);
-  box-shadow:var(--app-shadow-lg);
-}
-.table-page .modal-header h2{color:var(--app-text)}
-.table-page .modal-header p{color:var(--app-muted)}
-.table-page .modal-close,
-.table-page .modal-btn,
-.table-page .column-row input,
-.table-page .column-row select,
-.table-page .field input{
-  color:var(--app-text);
-  background:var(--app-control);
-  border-color:var(--app-border);
-}
-.table-page .modal-close:hover,
-.table-page .modal-btn:hover:not(:disabled){background:var(--app-control-hover);color:var(--app-text)}
-.table-page .form-section{background:var(--app-bg-soft);border-color:var(--app-border)}
-.table-page .field label,.table-page .form-section h3,.table-page .attachments-title{color:var(--app-muted)}
-.table-page .check-line{color:var(--app-text-soft)}
-.table-page .attachment{background:var(--app-control);border-color:var(--app-border);color:var(--app-text-soft)}
-.table-page .file-btn{background:var(--app-primary-soft);border-color:var(--app-accent-border);color:var(--app-primary-text)}
-.table-page .add-field{color:var(--app-primary-text)}
-.table-page .empty-icon{background:var(--app-control);border-color:var(--app-border);color:var(--app-primary)}
-.table-page .empty-title{color:var(--app-text)}
-.table-page .empty-help{color:var(--app-muted)}
-
-@media (max-width: 900px){
-  .table-page .row-action{width:31px}
-  .table-page .row-action span{display:none}
-  .table-page .row-action:hover{width:31px}
-  .table-page .row-actions{padding:2px}
-}
-
-@media (max-width: 640px){
-  .table-page .statusbar{padding:9px 10px}
-  .table-page .pagination-shell{width:100%;justify-content:flex-start}
-}
-
+/* Excel-like column controls — isolated inside TableDataView. table.css is not changed. */
+.data-table th.data-column-head{position:sticky;box-sizing:border-box;overflow:visible}.data-table th.data-column-head>button{padding-right:22px}.data-table th.data-column-head.is-resizing{box-shadow:inset -2px 0 0 var(--app-primary,#6366f1)}
+.data-table th.data-column-head .column-resizer{position:absolute;top:0;right:-4px;width:9px;height:100%;z-index:6;cursor:col-resize}.data-table th.data-column-head .column-resizer::after{content:"";position:absolute;top:8px;bottom:8px;left:3px;width:2px;border-radius:4px;background:transparent;transition:background .15s,box-shadow .15s}.data-table th.data-column-head:hover .column-resizer::after,.data-table th.data-column-head.is-resizing .column-resizer::after{background:var(--app-primary,#6366f1);box-shadow:0 0 0 3px color-mix(in srgb,var(--app-primary,#6366f1) 10%,transparent)}
+.data-table td.is-wrapped .cell-text-wrap{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:break-word;display:block;max-width:none;line-height:1.45}.data-table td.is-wrapped{vertical-align:top}
+.column-menu-backdrop{position:fixed;inset:0;z-index:120;pointer-events:auto}.column-context-menu{position:fixed;width:300px;max-width:calc(100vw - 16px);padding:8px;box-sizing:border-box;border:1px solid var(--app-border,rgba(255,255,255,.12));border-radius:14px;background:var(--app-surface,rgba(12,16,24,.98));color:var(--app-text,#e5e7eb);box-shadow:0 22px 55px rgba(0,0,0,.28);backdrop-filter:blur(18px);pointer-events:auto}.column-menu-title{padding:8px 10px 10px;border-bottom:1px solid var(--app-border,rgba(255,255,255,.08));margin-bottom:4px;overflow:hidden}.column-menu-title span{display:block;margin-bottom:2px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--app-muted,#64748b)}.column-menu-title strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.column-menu-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:0;background:transparent;color:inherit;padding:9px 10px;border-radius:10px;cursor:pointer;font:inherit}.column-menu-item:hover{background:var(--app-surface-strong,rgba(99,102,241,.08))}.column-menu-item .menu-icon{width:24px;height:24px;flex:0 0 24px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;background:var(--app-surface-soft,rgba(99,102,241,.08));color:var(--app-primary,#818cf8);font-size:14px}.column-menu-item span:last-child{min-width:0}.column-menu-item b{display:block;font-size:11px;line-height:1.25}.column-menu-item small{display:block;margin-top:2px;color:var(--app-muted,#64748b);font-size:9px;line-height:1.25}.column-menu-separator{height:1px;background:var(--app-border,rgba(255,255,255,.08));margin:4px 6px}.column-menu-fade-enter-active,.column-menu-fade-leave-active{transition:opacity .12s ease,transform .12s ease}.column-menu-fade-enter-from,.column-menu-fade-leave-to{opacity:0;transform:translateY(-4px) scale(.985)}:global(body.column-resizing),:global(body.column-resizing *){cursor:col-resize!important;user-select:none!important}
+@media(max-width:640px){.column-context-menu{width:min(300px,calc(100vw - 16px))}.data-table th.data-column-head .column-resizer{width:12px;right:-6px}}
 </style>
