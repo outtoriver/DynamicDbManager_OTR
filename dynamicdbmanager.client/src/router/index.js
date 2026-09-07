@@ -15,19 +15,13 @@ const routes = [
   { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
   { path: '/register', name: 'register', component: RegisterView, meta: { guest: true } },
   { path: '/admin/users', name: 'adminUsers', component: AdminUsersView, meta: { requiresAuth: true, requiresAdmin: true } },
-  {
-    path: '/admin/permissions',
-    redirect: to => ({ name: 'adminUsers', query: { tab: 'permissions', user: to.query.user } })
-  },
+  { path: '/admin/permissions', redirect: to => ({ name: 'adminUsers', query: { tab: 'permissions', user: to.query.user } }) },
   { path: '/forbidden', name: 'forbidden', component: ForbiddenView, meta: { requiresAuth: true } }
 ]
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
+const router = createRouter({ history: createWebHistory(), routes })
 
-router.beforeEach((to) => {
+router.beforeEach(to => {
   const authStore = useAuthStore()
   if (to.meta.requiresAuth && !authStore.isAuthenticated) return '/login'
   if (to.meta.guest && authStore.isAuthenticated) return '/'
