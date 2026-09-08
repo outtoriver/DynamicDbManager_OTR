@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-
 #nullable disable
 
 namespace DynamicDbManager.Server.Migrations
@@ -13,7 +12,6 @@ namespace DynamicDbManager.Server.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_UserTablePermissions_AdminTables_AdminTableId",
                 table: "UserTablePermissions");
-
             migrationBuilder.DropIndex(
                 name: "IX_UserTablePermissions_AdminTableId",
                 table: "UserTablePermissions");
@@ -36,7 +34,6 @@ namespace DynamicDbManager.Server.Migrations
                 name: "IX_UserTablePermissions_AdminTableId",
                 table: "UserTablePermissions",
                 column: "AdminTableId");
-
             migrationBuilder.AddForeignKey(
                 name: "FK_UserTablePermissions_AdminTables_AdminTableId",
                 table: "UserTablePermissions",

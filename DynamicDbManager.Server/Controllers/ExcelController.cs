@@ -1,4 +1,4 @@
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +19,7 @@ public class ExcelController : ControllerBase
 {
     private const int PreviewRows = 18;
     private const int MaxImportRows = 250_000;
+    private const int MaxExportRows = 250_000;
 
     private readonly AppDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -113,7 +114,7 @@ public class ExcelController : ControllerBase
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return Unauthorized();
         if (!await _userManager.IsInRoleAsync(user, "Admin"))
-            return Forbid("Только администратор может создавать таблицы из Excel");
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "Только администратор может создавать таблицы из Excel" });
 
         await using var stream = file.OpenReadStream();
         using var workbook = new XLWorkbook(stream);
@@ -218,7 +219,7 @@ public class ExcelController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
         if (!await UserCanEditTable(userId, tableId))
-            return Forbid("У вас нет прав на импорт данных в эту таблицу");
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "У вас нет прав на импорт данных в эту таблицу" });
 
         var table = await _context.AdminTables.FindAsync([tableId], cancellationToken);
         if (table == null) return NotFound("Таблица не найдена.");
@@ -292,7 +293,7 @@ public class ExcelController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
         if (!await UserCanViewTable(userId, tableId))
-            return Forbid("У вас нет прав на экспорт этой таблицы");
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "У вас нет прав на экспорт этой таблицы" });
 
         var table = await _context.AdminTables
             .AsNoTracking()
@@ -301,9 +302,18 @@ public class ExcelController : ControllerBase
         if (table == null) return NotFound("Таблица не найдена.");
 
         var columns = DeserializeTableColumns(table.TableColumnsJson);
-        var rows = await _context.AdminTableRows
+        var exportQuery = _context.AdminTableRows
             .AsNoTracking()
-            .Where(r => r.TableId == tableId)
+            .Where(r => r.TableId == tableId);
+
+        var exportRowCount = await exportQuery.CountAsync(cancellationToken);
+        if (exportRowCount > MaxExportRows)
+        {
+            return BadRequest(
+                $"В таблице слишком много строк для экспорта. Максимум: {MaxExportRows:N0}.");
+        }
+
+        var rows = await exportQuery
             .OrderBy(r => r.Id)
             .Select(r => new { r.DataJson })
             .ToListAsync(cancellationToken);

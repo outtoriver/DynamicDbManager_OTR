@@ -1,4 +1,4 @@
-﻿namespace DynamicDbManager.Server.Models;
+namespace DynamicDbManager.Server.Models;
 
 public class UserTablePermission
 {
@@ -10,11 +10,10 @@ public class UserTablePermission
 
     public bool CanView { get; set; } = true;   // просмотр
 
-    public bool CanEdit { get; set; } = false;  // редактирование (создание/изменение/удаление записей)
+    public bool CanEdit { get; set; } = false;  // создание и изменение записей
 
-    public bool CanDelete { get; set; } = false; // удаление таблицы (только для админов?)
+    public bool CanDelete { get; set; } = false; // удаление записей и вложений
 
-    // Навигация
     public ApplicationUser User { get; set; } = null!;
     public AdminTable Table { get; set; } = null!;
 }

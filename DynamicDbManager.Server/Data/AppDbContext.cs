@@ -20,6 +20,19 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
 
+        // AdminTable -> AdminTableRow использует реальный TableId.
+        // ClientCascade намеренно не создаёт новый SQL FK: старые базы могли
+        // содержать неконсистентные строки, и мы не хотим блокировать миграцию.
+        // При удалении таблицы контроллер удаляет загруженные строки явно.
+        modelBuilder.Entity<AdminTableRow>()
+            .HasOne(r => r.Table)
+            .WithMany(t => t.Rows)
+            .HasForeignKey(r => r.TableId)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
+        modelBuilder.Entity<AdminTableRow>()
+            .HasIndex(r => r.TableId);
+
         modelBuilder.Entity<Attachment>()
             .HasOne(a => a.Row)
             .WithMany(r => r.Attachments)
@@ -32,19 +45,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // ОДНА связь Permission -> AdminTable.
-        // Используем существующий TableId и существующую
-        // навигацию AdminTable.Permissions.
-        //
-        // Это предотвращает создание EF Core скрытого
-        // shadow-property AdminTableId.
         modelBuilder.Entity<UserTablePermission>()
             .HasOne(p => p.Table)
             .WithMany(t => t.Permissions)
             .HasForeignKey(p => p.TableId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Один пользователь = одна запись прав для конкретной таблицы.
         modelBuilder.Entity<UserTablePermission>()
             .HasIndex(p => new { p.UserId, p.TableId })
             .IsUnique();
